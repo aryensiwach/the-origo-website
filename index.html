@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="The Origo - Decode your past life soulmate and karmic debts using the most powerful AI Vedic Astrology engine. 95% accurate predictions based on D-60 charts."
+    />
+    <meta
+      property="og:title"
+      content="The Origo | Find Your Past Life Soulmate "
+    />
+    <meta
+      property="og:description"
+      content="Use AI + Vedic Astrology to decode your destiny. 95% Accurate. Get your Free Report now!"
+    />
+    <meta property="og:image" content="https://theorigo.in/banner.jpg" />
+    <meta property="og:url" content="https://theorigo.in" />
+    <meta property="og:type" content="website" />
+
+    <title>The Origo | Decode Your Destiny</title>
+
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <canvas id="constellation-canvas"></canvas>
+
+    <header class="main-header">
+      <nav class="navbar">
+        <div class="logo-container">
+          <img src="logo.png" alt="The Origo Logo" class="main-logo" />
+          <span class="brand-name">The Origo</span>
+        </div>
+
+        <div class="nav-links" id="navLinks">
+          <i class="fa-solid fa-xmark close-menu" id="closeMenuBtn"></i>
+          <a href="#">Home</a>
+          <a href="#features">Process</a>
+          <a href="#sample">Sample Report</a>
+          <a href="#comparison">Why Us</a>
+          <a href="#faq">FAQs</a>
+          <a href="#" class="btn-login-mobile trigger-join">Join (Free)</a>
+        </div>
+
+        <div class="nav-right">
+          <a href="#" class="btn-login-desktop trigger-join">
+            Join (Free) <i class="fa-solid fa-user-plus"></i>
+          </a>
+          <i class="fa-solid fa-bars hamburger" id="hamburgerBtn"></i>
+        </div>
+      </nav>
+
+      <div class="beta-bar">
+        <p>
+          <i class="fa-solid fa-fire-flame-curved blink"></i>
+          BETA LAUNCH OFFER: Full Analysis is <span class="strike">₹200</span>
+          <span class="free-tag">FREE</span> for next
+          <span id="timer">15:00</span> Minutes!
+        </p>
+      </div>
+    </header>
+
+    <div class="hero">
+      <h1>
+        Decode Your Destiny with <br />
+        <span class="text-gold">Most Powerful AI Astrology</span>
+      </h1>
+
+      <p class="hero-sub">
+        A fusion of <strong>Real Astrologers & AI</strong>. 100% Calculation
+        Accuracy for D-1 to D-60 Charts. Find your
+        <strong>Past Life Soulmate</strong>.
+      </p>
+
+      <div class="hero-highlights">
+        <div class="highlight-box">
+          <i class="fa-solid fa-bullseye"></i> 95% Accurate Predictions
+        </div>
+        <div class="highlight-box">
+          <i class="fa-solid fa-heart"></i> Know Your Soulmate & Life Purpose
+        </div>
+      </div>
+
+      <div class="cta-group">
+        <button class="btn-reveal trigger-single">
+          Reveal My Truth <i class="fa-solid fa-user"></i>
+        </button>
+        <button class="btn-reveal trigger-couple">
+          Check Soul Compatibility <i class="fa-solid fa-heart"></i>
+        </button>
+      </div>
+
+      <p class="privacy-text">Result in 24 Hours • 100% Private</p>
+
+      <div class="app-launch-section">
+        <p>App Launching Soon on</p>
+        <div class="store-badges">
+          <div class="store-btn">
+            <i class="fa-brands fa-apple"></i>
+            <div>
+              <span class="small-text">Download on the</span
+              ><span class="big-text">App Store</span>
+            </div>
+          </div>
+          <div class="store-btn">
+            <i class="fa-brands fa-google-play"></i>
+            <div>
+              <span class="small-text">GET IT ON</span
+              ><span class="big-text">Google Play</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="features" class="section-features">
+      <h2 class="section-title">How It Works</h2>
+      <div class="grid-features">
+        <div class="feature-item">
+          <i class="fa-solid fa-file-signature icon-3d"></i>
+          <h3>1. Accurate Data</h3>
+          <p>
+            We take exact Date & Time. Then, a
+            <strong>Real Astrologer</strong> + Detailed AI Analysis is
+            performed.
+          </p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-brain-circuit icon-3d"></i>
+          <h3>2. Deep Scanning</h3>
+          <p>
+            Our engine scans <strong>5,000+ Vedic Rules</strong> (D-60 & Dashas)
+            to find hidden patterns.
+          </p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-paper-plane icon-3d"></i>
+          <h3>3. Receive Insights</h3>
+          <p>
+            Get your Past Life & Soulmate Report directly on
+            <strong>Mail / WhatsApp</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sample" class="section-sample">
+      <div class="sample-container">
+        <div class="sample-text">
+          <h2 class="section-title" style="text-align: left">
+            Inside Your Report
+          </h2>
+          <p class="sub-title" style="text-align: left; margin-bottom: 20px">
+            No generic horoscopes. You get a
+            <strong>Premium PDF</strong> crafted manually by experts.
+          </p>
+          <ul class="sample-list">
+            <li>
+              <i class="fa-solid fa-eye text-green"></i>
+              <strong>Visual Charts:</strong> D-1, D-9 & D-60 Maps.
+            </li>
+            <li>
+              <i class="fa-solid fa-scroll text-green"></i>
+              <strong>Past Life Story:</strong> Who were you?
+            </li>
+            <li>
+              <i class="fa-solid fa-heart text-green"></i>
+              <strong>Soulmate Clues:</strong> Looks & Nature.
+            </li>
+            <li>
+              <i class="fa-solid fa-hand-holding-heart text-green"></i>
+              <strong>Remedies:</strong> Practical Upay.
+            </li>
+          </ul>
+        </div>
+
+        <div class="sample-slider">
+          <div class="slider-track">
+            <div class="slide-card">
+              <img
+                src="https://3.imimg.com/data3/PY/AN/MY-7887529/kundli-making-and-matching-500x500.jpg"
+                alt="Report Cover"
+                class="report-img"
+              />
+            </div>
+            <div class="slide-card">
+              <img
+                src="https://astro.manishverma.site/wp-content/uploads/sites/2/2017/07/lord-krishna-kundali1.png"
+                alt="Analysis Page"
+                class="report-img"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="comparison" class="section-comparison">
+      <h2 class="section-title">Why Choose The Origo?</h2>
+      <div class="comparison-table-wrapper">
+        <div class="comparison-table">
+          <div class="row header">
+            <div class="col feature">Feature</div>
+            <div class="col others">AstroSage/Talk</div>
+            <div class="col others">Dating Apps</div>
+            <div class="col origo">The Origo</div>
+          </div>
+          <div class="row">
+            <div class="col feature">Basis of Match</div>
+            <div class="col others">Gunas Only</div>
+            <div class="col others">Photos/Bio</div>
+            <div class="col origo"><strong>Soul & Karma (D-60)</strong></div>
+          </div>
+          <div class="row">
+            <div class="col feature">Past Life Data</div>
+            <div class="col others">
+              <i class="fa-solid fa-xmark text-red"></i> No
+            </div>
+            <div class="col others">
+              <i class="fa-solid fa-xmark text-red"></i> No
+            </div>
+            <div class="col origo">
+              <i class="fa-solid fa-check text-green"></i>
+              <strong>Yes (Regression)</strong>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col feature">Past Sins/Debts</div>
+            <div class="col others">Generic</div>
+            <div class="col others">N/A</div>
+            <div class="col origo"><strong>Specific 'Rina'</strong></div>
+          </div>
+          <div class="row">
+            <div class="col feature">Privacy</div>
+            <div class="col others">Sold Data</div>
+            <div class="col others">Public</div>
+            <div class="col origo">
+              <i class="fa-solid fa-lock text-gold"></i>
+              <strong>Deleted in 24h</strong>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col feature">Accuracy</div>
+            <div class="col others">~60%</div>
+            <div class="col others">Random</div>
+            <div class="col origo">
+              <span class="text-gold">95% (AI + Human)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experts" class="section-experts bg-darker">
+      <h2 class="section-title" style="color: var(--gold)">Meet The Minds</h2>
+      <div class="grid-3">
+        <div class="expert-card">
+          <div class="expert-img">
+            <img src="13b1f9f1-3c68-4f17-8635-53d6d3e529f4.png" alt="Acharya" />
+          </div>
+          <h3>Acharya Ravi Shastri</h3>
+          <p class="expert-role">D-60 Specialist</p>
+        </div>
+        <div class="expert-card">
+          <div class="expert-img">
+            <img
+              src="53fef77f-6f58-4f95-90ad-571b482417b6.png"
+              alt="Dr Priya"
+            />
+          </div>
+          <h3>Dr. Priya Sharma</h3>
+          <p class="expert-role">Karmic Expert</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="stories" class="section-stories">
+      <h2 class="section-title">Real Stories</h2>
+      <div class="stories-grid">
+        <div class="story-card">
+          <div class="whatsapp-screen">
+            <img src="story1.jpg" alt="Review 1" class="chat-img" />
+          </div>
+          <p>"The past life regression gave me goosebumps!"</p>
+        </div>
+        <div class="story-card">
+          <div class="whatsapp-screen">
+            <img src="story2.png" alt="Review 2" class="chat-img" />
+          </div>
+          <p>"Waiting for the soulmate prediction to come true!"</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="section-faq">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="sub-title">
+        Clearing your doubts before you discover your destiny.
+      </p>
+
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h3><i class="fa-solid fa-lock"></i> Is my personal data safe?</h3>
+          <p>
+            100% Safe. We use <strong>256-bit Bank-Grade Encryption</strong>.
+            Your birth details are used <em>only</em> by our AI engine for
+            calculation and are
+            <strong
+              >permanently deleted from our servers within 24 hours</strong
+            >
+            after the report is sent. We never sell data.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>
+            <i class="fa-solid fa-tag"></i> Why is this premium report free?
+          </h3>
+          <p>
+            The Origo is currently in <strong>Public Beta</strong>. We are
+            offering this ₹1,500 value report for FREE to the first 500 users in
+            exchange for honest feedback and testimonials. Once we launch the
+            App, this will be a paid service.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>
+            <i class="fa-solid fa-clock"></i> What if I don't know my exact
+            birth time?
+          </h3>
+          <p>
+            Vedic D-60 charts change every 2 minutes. For the most accurate
+            "Past Life" reading, exact time is crucial. If unsure, ask your
+            parents or check your birth certificate. Without exact time, we can
+            only analyze your <strong>Moon Chart (D-1)</strong>, which is 60%
+            less detailed.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>
+            <i class="fa-solid fa-robot"></i> Is this generated by AI or Humans?
+          </h3>
+          <p>
+            It is a <strong>Hybrid Model</strong>. AI handles the complex
+            mathematical calculations (planetary degrees to 0.001% precision)
+            which eliminates human error. Then, our
+            <strong>Vedic Acharyas</strong> verify the logic patterns to ensure
+            the prediction resonates with human emotions.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3><i class="fa-solid fa-file-pdf"></i> What exactly will I get?</h3>
+          <p>
+            You will receive a detailed
+            <strong>15-20 Page PDF Report</strong> on WhatsApp. It covers: Your
+            Past Life Identity (Karma), Current Life Purpose, Soulmate
+            Personality Traits, Financial Yogas, and specific Karmic Remedies
+            (Upay).
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3><i class="fa-brands fa-whatsapp"></i> How long does it take?</h3>
+          <p>
+            Since every chart is manually verified for accuracy after AI
+            processing, it takes approximately
+            <strong>12 to 24 Hours</strong> to deliver your personalized report
+            to your WhatsApp number. Good things take time!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="main-footer">
+      <div class="footer-content">
+        <div class="footer-col brand-col">
+          <div class="footer-logo">
+            <i class="fa-solid fa-star-of-life"></i> The Origo
+          </div>
+          <p>Most accurate AI Vedic Astrology engine.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2025 The Origo AI.</p></div>
+    </footer>
+
+    <div class="live-popup" id="livePopup">
+      <div class="popup-icon"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="popup-text" id="popupText">Loading...</div>
+    </div>
+
+    <div id="singleModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn close-single">&times;</span>
+        <div class="modal-header">
+          <h2>Unlock Your Destiny ✨</h2>
+          <p>D-60 & Life Purpose Analysis</p>
+        </div>
+        <form
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          class="destiny-form"
+        >
+          <input
+            type="hidden"
+            name="access_key"
+            value="fc465b9d-7768-4209-b26d-9bb94a324771"
+          />
+          <input
+            type="hidden"
+            name="subject"
+            value="New SINGLE Report Request"
+          />
+          <input
+            type="hidden"
+            name="redirect"
+            value="https://web3forms.com/success"
+          />
+
+          <div class="row-inputs">
+            <div class="input-group" style="flex: 2">
+              <label>Full Name</label><input type="text" name="name" required />
+            </div>
+            <div class="input-group" style="flex: 1">
+              <label>Gender</label
+              ><select name="gender">
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+            </div>
+          </div>
+          <div class="row-inputs">
+            <div class="input-group">
+              <label>DOB</label><input type="date" name="dob" required />
+            </div>
+            <div class="input-group">
+              <label>Time</label><input type="time" name="time" required />
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Place of Birth</label
+            ><input type="text" name="place" required />
+          </div>
+
+          <div class="row-inputs">
+            <div class="input-group">
+              <label>WhatsApp</label
+              ><input type="tel" name="whatsapp" required />
+            </div>
+            <div class="input-group">
+              <label>Email</label><input type="email" name="email" required />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Top Priority?</label>
+            <select name="priority">
+              <option>Love & Soulmate</option>
+              <option>Career & Money</option>
+              <option>Past Life Karma</option>
+              <option>Health</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Relation Status</label>
+            <select name="status">
+              <option>Single</option>
+              <option>In Relationship</option>
+              <option>Complicated</option>
+              <option>Married</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Specific Question</label
+            ><textarea name="question" rows="2"></textarea>
+          </div>
+          <div class="input-group">
+            <label>Language</label
+            ><select name="lang">
+              <option>Hinglish</option>
+              <option>Hindi</option>
+              <option>English</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit">Reveal My Truth</button>
+          <p class="form-footer">
+            <i class="fa-solid fa-lock"></i> 100% Private
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <div id="coupleModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn close-couple">&times;</span>
+        <div class="modal-header">
+          <h2>Soul Compatibility ❤️</h2>
+          <p>Check Karmic Bond</p>
+        </div>
+        <form
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          class="destiny-form"
+        >
+          <input
+            type="hidden"
+            name="access_key"
+            value="fc465b9d-7768-4209-b26d-9bb94a324771"
+          />
+          <input
+            type="hidden"
+            name="subject"
+            value="New COUPLE Report Request"
+          />
+          <input
+            type="hidden"
+            name="redirect"
+            value="https://web3forms.com/success"
+          />
+
+          <h4 class="form-section-title">1. Your Details</h4>
+          <div class="input-group">
+            <input
+              type="text"
+              name="Your_Name"
+              placeholder="Your Name"
+              required
+            />
+          </div>
+          <div class="row-inputs">
+            <div class="input-group">
+              <input type="date" name="Your_DOB" required />
+            </div>
+            <div class="input-group">
+              <input type="time" name="Your_Time" required />
+            </div>
+          </div>
+          <div class="input-group">
+            <input
+              type="text"
+              name="Your_Place"
+              placeholder="Your City"
+              required
+            />
+          </div>
+
+          <h4
+            class="form-section-title"
+            style="margin-top: 15px; color: #ff6b6b"
+          >
+            2. Partner's Details
+          </h4>
+          <div class="input-group">
+            <input
+              type="text"
+              name="Partner_Name"
+              placeholder="Partner's Name"
+              required
+            />
+          </div>
+          <div class="row-inputs">
+            <div class="input-group">
+              <input type="date" name="Partner_DOB" required />
+            </div>
+            <div class="input-group">
+              <input type="time" name="Partner_Time" required />
+            </div>
+          </div>
+          <div class="input-group">
+            <input
+              type="text"
+              name="Partner_Place"
+              placeholder="Partner's City"
+              required
+            />
+          </div>
+
+          <div class="input-group" style="margin-top: 15px">
+            <label>WhatsApp for Report</label
+            ><input type="tel" name="phone" required />
+          </div>
+
+          <button
+            type="submit"
+            class="btn-submit"
+            style="background: linear-gradient(135deg, #ff6b6b, #e6c2a1)"
+          >
+            Check Compatibility
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div id="joinModal" class="modal">
+      <div class="modal-content" style="max-width: 400px">
+        <span class="close-btn close-join">&times;</span>
+        <div class="modal-header">
+          <h2>Join The Circle ✨</h2>
+          <p>Get Early Access</p>
+        </div>
+        <form
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          class="destiny-form"
+        >
+          <input
+            type="hidden"
+            name="access_key"
+            value="fc465b9d-7768-4209-b26d-9bb94a324771"
+          />
+          <input
+            type="hidden"
+            name="subject"
+            value="New Member Joined (Free)"
+          />
+          <input
+            type="hidden"
+            name="redirect"
+            value="https://web3forms.com/success"
+          />
+          <div class="input-group">
+            <label>Full Name</label><input type="text" name="name" required />
+          </div>
+          <div class="input-group">
+            <label>Email</label><input type="email" name="email" required />
+          </div>
+          <div class="input-group">
+            <label>WhatsApp</label><input type="tel" name="phone" required />
+          </div>
+          <button type="submit" class="btn-submit">Join Now</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
