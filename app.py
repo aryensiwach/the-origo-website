@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import firebase_admin
 from firebase_admin import credentials, firestore
 import os
-import json # <--- IMPORTANT ADDITION
+import json
 from dotenv import load_dotenv
 from astro_engine import generate_chart_data
 import traceback
@@ -13,52 +13,65 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# GLOBAL VARIABLES TO TRACK ERRORS
+firebase_status = "Not Initialized"
+groq_status = "Not Initialized"
+db = None
+client = None
+
 # ==========================================
-# 1. FIREBASE CONFIGURATION (VERCEL FIX)
+# 1. FIREBASE CONFIGURATION (DEBUG MODE)
 # ==========================================
-if not firebase_admin._apps:
-    try:
-        # Check for Environment Variable first (Vercel Production)
+try:
+    if not firebase_admin._apps:
+        # Check Environment Variable
         firebase_creds = os.getenv("FIREBASE_CREDENTIALS")
         
         if firebase_creds:
-            # Parse the JSON string from Environment Variable
-            cred_dict = json.loads(firebase_creds)
-            cred = credentials.Certificate(cred_dict)
-            firebase_admin.initialize_app(cred)
-            print("🔥 Firebase Initialized from ENV")
-            
-        # Fallback to local file (Local Development)
+            try:
+                # Try to parse JSON
+                cred_dict = json.loads(firebase_creds)
+                cred = credentials.Certificate(cred_dict)
+                firebase_admin.initialize_app(cred)
+                firebase_status = "✅ Success (From Env)"
+                print(firebase_status)
+            except json.JSONDecodeError as e:
+                firebase_status = f"❌ JSON Error: {str(e)}"
+                print(firebase_status)
+            except Exception as e:
+                firebase_status = f"❌ Certificate Error: {str(e)}"
+                print(firebase_status)
         elif os.path.exists("serviceAccountKey.json"):
             cred = credentials.Certificate("serviceAccountKey.json")
             firebase_admin.initialize_app(cred)
-            print("🔥 Firebase Initialized Locally")
-            
+            firebase_status = "✅ Success (Local File)"
         else:
-            print("⚠️ Critical: No Firebase Credentials Found! App will crash.")
-            
-    except Exception as e:
-        print(f"❌ Firebase Init Error: {e}")
+            firebase_status = "⚠️ No Credentials Found"
+    
+    # Init DB
+    if firebase_status.startswith("✅"):
+        db = firestore.client()
+    else:
+        db = None
 
-# Initialize Firestore
-try:
-    db = firestore.client()
-except Exception:
-    db = None # Prevent immediate crash, handle in routes
+except Exception as e:
+    firebase_status = f"❌ General Error: {str(e)}"
+    db = None
 
 # ==========================================
-# 2. API KEYS SETUP
+# 2. API KEYS & GROQ SETUP
 # ==========================================
 VEDIC_API_KEY = os.getenv("VEDIC_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-client = None
-if GROQ_API_KEY:
-    try:
+try:
+    if GROQ_API_KEY:
         client = Groq(api_key=GROQ_API_KEY)
-        print("🚀 Groq AI Connected")
-    except Exception as e:
-        print(f"⚠️ Groq Error: {e}")
+        groq_status = "✅ Connected"
+    else:
+        groq_status = "⚠️ Missing Key"
+except Exception as e:
+    groq_status = f"❌ Error: {str(e)}"
 
 # Rashi Mapping
 RASHI_MAP = {
@@ -76,20 +89,16 @@ def format_chart_for_ai(chart_data):
     try:
         asc_sign = chart_data.get('Asc') or chart_data.get('Ascendant')
         if not asc_sign: return "Ascendant Missing."
-
-        formatted_list = []
-        formatted_list.append(f"- **LAGNA**: {RASHI_MAP.get(asc_sign, 'Unknown')} (1st House)")
-
+        formatted_list = [f"- **LAGNA**: {RASHI_MAP.get(asc_sign, 'Unknown')} (1st House)"]
         for planet, sign in chart_data.items():
             if planet in ['Asc', 'Ascendant']: continue
             diff = sign - asc_sign
             if diff < 0: diff += 12
             house_num = diff + 1
             formatted_list.append(f"- **{planet}**: {house_num}th House ({RASHI_MAP.get(sign, 'Unknown')})")
-
         return "\n".join(formatted_list)
-    except:
-        return "Error Formatting"
+    except Exception as e:
+        return f"Error Formatting: {str(e)}"
 
 # ==========================================
 # 4. ROUTES
@@ -111,10 +120,11 @@ def soulmate():
 
 @app.route('/api/save_user_data', methods=['POST'])
 def save_user_data():
-    if not db: return jsonify({"status": "error", "message": "Database Error"}), 500
+    if not db:
+        return jsonify({"status": "error", "message": f"DB Error: {firebase_status}"}), 500
+    
     try:
         uid = request.form.get('uid')
-        # ... (Rest of logic remains same) ...
         name = request.form.get('name')
         dob = request.form.get('dob')
         time = request.form.get('time')
@@ -127,7 +137,7 @@ def save_user_data():
         chart_data = generate_chart_data(name, dob, time, place, VEDIC_API_KEY)
         if "error" in chart_data: return jsonify({"status": "error"}), 400
 
-        current_points = 20 # Default for new users
+        current_points = 20
         if not uid.startswith('guest_'):
             doc = db.collection('users').document(uid).get()
             if doc.exists:
@@ -141,14 +151,20 @@ def save_user_data():
         })
         db.collection('users').document(uid).set(chart_data)
         return jsonify({"status": "success", "user_id": uid})
-    except Exception as e: 
-        print(e)
-        return jsonify({"status": "error"}), 500
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/chat_analysis', methods=['POST'])
 def chat_analysis():
-    if not db: return jsonify({"reply": "Database Error"}), 500
+    # 1. DEBUG CHECKS
+    if not db:
+        return jsonify({"reply": f"❌ Database Crash: {firebase_status}"}), 200
+    
+    if not client:
+        return jsonify({"reply": f"❌ Groq API Crash: {groq_status}"}), 200
+
     try:
+        # 2. DATA FETCH
         data = request.json
         target_uid = data.get('uid')
         payer_uid = data.get('payer_uid')
@@ -157,7 +173,7 @@ def chat_analysis():
         cost = data.get('cost', 1)
 
         doc = db.collection('users').document(target_uid).get()
-        if not doc.exists: return jsonify({"reply": "No data found."})
+        if not doc.exists: return jsonify({"reply": "No data found for this user."})
         
         user_data = doc.to_dict()
         profile = user_data.get('profile', {})
@@ -167,16 +183,12 @@ def chat_analysis():
         payer_ref = db.collection('users').document(payer_uid)
         credits = payer_ref.get().to_dict().get('profile', {}).get('credits', 0)
         
-        if credits < cost: return jsonify({"reply": f"Low Balance: {credits}", "error": "low_balance"})
+        if credits < cost: return jsonify({"reply": f"Low Balance: {credits} points", "error": "low_balance"})
 
         d1_readable = format_chart_for_ai(charts.get('D1', {}))
         target_readable = format_chart_for_ai(charts.get(chart_focus, {}))
 
-        # ... (AI Logic Same as Before) ...
-        # Simplified for brevity, paste your logic here if needed
-        # Or just use the logic from previous response
-        
-        # --- RE-INSERTING YOUR EXACT AI LOGIC HERE ---
+        # 3. AI LOGIC
         msg_lower = user_message.lower()
         is_report_mode = "analyze" in msg_lower and "chart" in msg_lower
         
@@ -199,13 +211,13 @@ def chat_analysis():
         [DATA] {d1_readable}
         [INPUT] {user_message}
         """
-
-        if not client: return jsonify({"reply": "AI Error"})
         
+        # 4. CALL GROQ
         chat_completion = client.chat.completions.create(
             messages=[{"role": "system", "content": "You are Origo AI."}, {"role": "user", "content": final_prompt}],
             model="llama-3.3-70b-versatile",
-            temperature=0.7
+            temperature=0.7,
+            max_tokens=2000
         )
         
         reply_text = chat_completion.choices[0].message.content
@@ -213,8 +225,10 @@ def chat_analysis():
         return jsonify({"reply": reply_text, "new_credits": credits - cost})
 
     except Exception as e:
-        print(f"❌ Error: {e}")
-        return jsonify({"reply": "Server Error"}), 500
+        # 5. CATCH ACTUAL ERROR
+        error_msg = traceback.format_exc()
+        print(f"❌ Runtime Error: {error_msg}")
+        return jsonify({"reply": f"⚠️ System Error: {str(e)}"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
