@@ -42,14 +42,13 @@
       }
 
       /* --- HERO POSITION FIX --- */
-      /* Isse content navbar ke just neeche start hoga */
       .hero {
-        padding-top: 130px; /* Reduced from 160px to fit tight below navbar */
+        padding-top: 130px;
       }
       @media (max-width: 768px) {
         .hero {
           padding-top: 110px;
-        } /* Mobile ke liye aur adjust kiya */
+        }
       }
 
       .modal {
@@ -446,27 +445,22 @@
             life's journey with clarity and confidence.
           </p>
           <div class="social-links">
-            <i class="fa-brands fa-instagram"></i>
-            <i class="fa-brands fa-twitter"></i>
-            <i class="fa-brands fa-youtube"></i>
-            <i class="fa-brands fa-linkedin"></i>
+            <i class="fa-brands fa-instagram"></i
+            ><i class="fa-brands fa-twitter"></i
+            ><i class="fa-brands fa-youtube"></i
+            ><i class="fa-brands fa-linkedin"></i>
           </div>
         </div>
-
         <div class="footer-col">
           <h4>Quick Links</h4>
-          <a href="#">Home</a>
-          <a href="{{ url_for('soulmate') }}">Soulmate Match</a>
-          <a href="#features">How it Works</a>
-          <a href="#faq">FAQs</a>
+          <a href="#">Home</a
+          ><a href="{{ url_for('soulmate') }}">Soulmate Match</a
+          ><a href="#features">How it Works</a><a href="#faq">FAQs</a>
         </div>
-
         <div class="footer-col">
           <h4>Legal</h4>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Refund Policy</a>
-          <a href="#">Contact Support</a>
+          <a href="#">Privacy Policy</a><a href="#">Terms of Service</a
+          ><a href="#">Refund Policy</a><a href="#">Contact Support</a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -568,14 +562,12 @@
         >
           Enter precise details for accurate predictions.
         </p>
-
         <form id="onboardingForm" onsubmit="submitOnboarding(event)">
           <input type="hidden" id="userUid" name="uid" />
           <input type="hidden" id="userEmail" name="email" />
-
           <div class="form-group">
-            <label class="form-label">Full Name</label>
-            <input
+            <label class="form-label">Full Name</label
+            ><input
               type="text"
               id="userName"
               name="name"
@@ -584,10 +576,9 @@
               required
             />
           </div>
-
           <div class="form-group">
-            <label class="form-label">Date of Birth</label>
-            <input
+            <label class="form-label">Date of Birth</label
+            ><input
               type="date"
               id="userDob"
               name="dob"
@@ -595,10 +586,9 @@
               required
             />
           </div>
-
           <div class="form-group">
-            <label class="form-label">Time of Birth</label>
-            <input
+            <label class="form-label">Time of Birth</label
+            ><input
               type="time"
               id="userTime"
               name="time"
@@ -606,10 +596,9 @@
               required
             />
           </div>
-
           <div class="form-group">
-            <label class="form-label">Place of Birth</label>
-            <input
+            <label class="form-label">Place of Birth</label
+            ><input
               type="text"
               id="userPlace"
               name="place"
@@ -618,25 +607,22 @@
               required
             />
           </div>
-
           <div class="form-group">
-            <label class="form-label">Gender</label>
-            <select id="userGender" name="gender" class="form-input">
+            <label class="form-label">Gender</label
+            ><select id="userGender" name="gender" class="form-input">
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
           </div>
-
           <div class="form-group">
-            <label class="form-label">Relationship Status</label>
-            <select id="userStatus" name="status" class="form-input">
+            <label class="form-label">Relationship Status</label
+            ><select id="userStatus" name="status" class="form-input">
               <option value="single">Single</option>
               <option value="relationship">In Relationship</option>
               <option value="married">Married</option>
             </select>
           </div>
-
           <button type="submit" class="btn-save">Generate Kundli & Save</button>
         </form>
       </div>
@@ -731,11 +717,14 @@
         } else openModal("loginModal");
       };
 
-      // Profile Logic
+      // --- FIXED PROFILE CHECK LOGIC ---
       async function checkUserProfile(user) {
         try {
           const doc = await db.collection("users").doc(user.uid).get();
-          if (doc.exists) {
+
+          // Checking if Document exists AND if it has a profile with DOB
+          // This prevents redirecting new empty users
+          if (doc.exists && doc.data().profile && doc.data().profile.dob) {
             window.location.href = "/dashboard";
           } else {
             openEditProfile(user);

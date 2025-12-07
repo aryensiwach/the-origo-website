@@ -36,6 +36,8 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
+        height: 100%;
+        width: 100%;
       }
 
       /* --- NAVBAR --- */
@@ -88,7 +90,7 @@
         font-family: "Poppins", sans-serif;
       }
 
-      /* --- COSMIC STRIP (DESKTOP) --- */
+      /* --- COSMIC STRIP --- */
       .planet-strip {
         position: fixed;
         top: 55px;
@@ -151,14 +153,19 @@
         letter-spacing: 0.5px;
       }
 
-      /* --- LAYOUT & SIDEBAR (FIXED) --- */
+      /* --- CHAT CONTAINER --- */
       .chat-container {
         display: flex;
-        height: 100vh;
-        padding-top: 115px;
-        position: relative;
+        position: fixed;
+        top: 115px;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
+        overflow: hidden;
       }
 
+      /* --- SIDEBAR --- */
       .sidebar {
         width: 260px;
         background: #0d0d0d;
@@ -167,27 +174,30 @@
         flex-direction: column;
         padding: 20px;
         gap: 15px;
-        position: absolute;
-        top: 115px;
-        bottom: 0;
-        left: -260px; /* Fully Hidden */
+        position: relative;
+        height: 100%;
+        overflow-y: auto;
         transition: transform 0.3s ease;
         z-index: 150;
-        overflow-y: auto;
       }
-      .sidebar.active {
-        transform: translateX(260px); /* Exact match to width */
+      .big-select {
+        width: 100%;
+        padding: 12px 15px;
+        background: #1a1a1a;
+        border: 1px solid #444;
+        color: #fff;
+        font-size: 1rem;
+        border-radius: 8px;
+        outline: none;
+        margin-bottom: 15px;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
       }
 
       @media (min-width: 769px) {
-        .sidebar {
-          position: relative;
-          left: 0;
-          top: 0;
-          height: 100%;
-          transform: none;
-          box-shadow: none;
-        }
         .menu-btn {
           display: none;
         }
@@ -195,29 +205,30 @@
           display: none !important;
         }
       }
+
       @media (max-width: 768px) {
+        .chat-container {
+          top: 55px;
+        }
         .sidebar {
           position: fixed;
           top: 0;
           bottom: 0;
-          width: 80%;
-          max-width: 300px;
+          left: 0;
+          width: 85%;
+          max-width: 320px;
           transform: translateX(-100%);
           z-index: 250;
-          padding-top: 60px;
-          left: 0;
+          padding-top: 70px;
         }
         .sidebar.active {
           transform: translateX(0);
-        } /* Simple slide in */
+        }
         .planet-strip {
           display: none !important;
         }
         .chart-toggle-btn {
           display: flex !important;
-        }
-        .chat-container {
-          padding-top: 55px;
         }
         .brand-title span {
           display: none;
@@ -230,25 +241,25 @@
         }
       }
 
-      /* --- CHAT STYLING --- */
+      /* --- CHAT AREA --- */
       .chat-area {
         flex: 1;
         position: relative;
         display: flex;
         flex-direction: column;
-        background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
+        height: 100%;
       }
       .messages-box {
         flex: 1;
         overflow-y: auto;
         padding: 15px;
-        padding-bottom: 140px;
+        padding-bottom: 80px;
         display: flex;
         flex-direction: column;
         gap: 20px;
         scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
       }
-
       .msg-row {
         display: flex;
         gap: 15px;
@@ -260,7 +271,6 @@
       .msg-row.user {
         justify-content: flex-end;
       }
-
       .avatar {
         width: 38px;
         height: 38px;
@@ -283,26 +293,77 @@
         color: #fff;
       }
 
-      /* --- AI MESSAGE BUBBLE STYLING --- */
-      /* --- FIXED AI MESSAGE STYLING --- */
+      /* --- INPUT --- */
+      .input-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px;
+        background: #0d0d0d;
+        border-top: 1px solid #222;
+        display: flex;
+        justify-content: center;
+        z-index: 50;
+        padding-bottom: env(safe-area-inset-bottom, 10px);
+      }
+      .input-box {
+        width: 100%;
+        max-width: 850px;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 20px;
+        padding: 8px 15px;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+      }
+      textarea.chat-input {
+        background: transparent;
+        border: none;
+        color: white;
+        width: 100%;
+        resize: none;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        max-height: 100px;
+        height: 40px;
+        outline: none;
+        font-family: sans-serif;
+      }
+      .btn-send {
+        background: var(--gold);
+        color: #000;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: transform 0.2s;
+      }
+      .btn-send:active {
+        transform: scale(0.9);
+      }
+
+      /* --- CONTENT STYLING --- */
       .msg-content {
         background: transparent;
         color: #e0e0e0;
         line-height: 1.6;
         font-size: 1rem;
-        width: 100%; /* Fix width */
-        max-width: 100%; /* Prevent overflow */
+        width: 100%;
+        max-width: 100%;
         font-weight: 400;
         text-align: left;
         font-family: "Roboto", sans-serif;
-
-        /* IMPORTANT: Ye text ko screen ke andar rakhega */
         overflow-wrap: break-word;
         word-wrap: break-word;
         word-break: break-word;
       }
-
-      /* User Bubble Styling */
       .msg-row.user .msg-content {
         background: #2a2a2a;
         padding: 10px 15px;
@@ -311,47 +372,34 @@
         border: 1px solid #444;
         font-size: 0.95rem;
       }
-
-      /* --- MARKDOWN ELEMENTS (FIXED SPACING) --- */
-
-      /* Headings (Section 1, 2 etc) */
       .msg-content h3 {
         color: var(--gold);
         margin: 20px 0 10px 0;
         font-family: "Poppins", sans-serif;
         font-size: 1.1rem;
         border-left: 3px solid var(--gold);
-        padding-left: 10px; /* Thoda gap border se */
+        padding-left: 10px;
         line-height: 1.4;
       }
-
-      /* Bold Text */
       .msg-content strong {
-        color: #e6c2a1; /* Thoda light gold */
+        color: #e6c2a1;
         font-weight: 600;
       }
-
-      /* Paragraphs */
       .msg-content p {
         margin-bottom: 12px;
         display: block;
       }
-
-      /* Lists (Bullet Points - FIXED INDENTATION) */
       .msg-content ul,
       .msg-content ol {
-        margin: 5px 0 15px 0; /* Left margin hata diya */
-        padding-left: 20px; /* Standard padding */
+        margin: 5px 0 15px 0;
+        padding-left: 20px;
       }
-
       .msg-content li {
         margin-bottom: 6px;
         color: #ddd;
-        padding-left: 0; /* Extra padding hatayi */
+        padding-left: 0;
         line-height: 1.5;
       }
-
-      /* Tables */
       .msg-content table {
         width: 100%;
         border-collapse: collapse;
@@ -374,36 +422,28 @@
         border-bottom: 1px solid #222;
         color: #ccc;
       }
-
-      /* Separator */
       .msg-content hr {
         border: 0;
         height: 1px;
         background: rgba(255, 255, 255, 0.1);
         margin: 20px 0;
       }
-
-      /* --- MOBILE SPECIFIC FIXES --- */
       @media (max-width: 768px) {
         .msg-row {
           gap: 10px;
           max-width: 100%;
-          padding-right: 5px; /* Right side gap taaki chipke na */
+          padding-right: 5px;
         }
-
         .msg-content {
-          font-size: 0.6rem; /* Readable size */
+          font-size: 0.9rem;
           line-height: 1.5;
         }
-
         .msg-content h3 {
           font-size: 1rem;
           margin-top: 15px;
-          border-left-width: 2px; /* Patla border mobile ke liye */
+          border-left-width: 2px;
           padding-left: 8px;
         }
-
-        /* Mobile Table Scroll Fix */
         .msg-content table {
           display: block;
           overflow-x: auto;
@@ -411,7 +451,6 @@
         }
       }
 
-      /* Follow-up Chips */
       .followup-container {
         display: flex;
         flex-wrap: wrap;
@@ -422,12 +461,8 @@
       .chip {
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid #444;
-
-        /* 👇 YAHAN SE SIZE CONTROL HOGA */
-        padding: 6px 12px; /* Box ka size yahan se kam kr */
-        font-size: 0.7rem; /* Text ka size yahan se kam kr */
-        /* 👆 */
-
+        padding: 6px 12px;
+        font-size: 0.7rem;
         border-radius: 20px;
         color: #ccc;
         cursor: pointer;
@@ -442,69 +477,7 @@
         color: var(--gold);
       }
 
-      /* INPUT */
-      .input-wrapper {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 15px;
-        background: #0d0d0d;
-        border-top: 1px solid #222;
-        display: flex;
-        justify-content: center;
-        z-index: 50;
-      }
-
-      .input-box {
-        width: 100%;
-        max-width: 850px;
-        background: #1a1a1a;
-        border: 1px solid #333;
-        border-radius: 20px;
-        padding: 10px 15px; /* Padding adjust ki */
-        display: flex;
-        align-items: flex-end; /* Button ko bottom mein rakhne ke liye */
-        gap: 10px;
-        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
-      }
-
-      textarea.chat-input {
-        background: transparent;
-        border: none;
-        color: white;
-        width: 100%;
-        resize: none; /* Manual resize band */
-        font-size: 0.78em;
-        line-height: 1.5;
-        max-height: 120px; /* Isse zyada lamba nahi hoga */
-        height: 40px; /* Default height */
-        outline: none;
-        font-family: sans-serif;
-        overflow-y: hidden; /* Scrollbar chupao jab tak jarurat na ho */
-      }
-
-      /* --- SUGGESTIONS (CHIPS) SHORT KARNE KE LIYE --- */
-
-      .btn-send {
-        background: var(--gold);
-        color: #000;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        transition: transform 0.2s;
-      }
-      .btn-send:active {
-        transform: scale(0.9);
-      }
-
-      /* GUEST FORM (VERTICAL) */
+      /* GUEST FORM & DRAWER */
       .guest-modal {
         position: fixed;
         top: 50%;
@@ -556,7 +529,6 @@
         cursor: pointer;
       }
 
-      /* SETTINGS */
       .length-selector {
         display: flex;
         background: #151515;
@@ -581,7 +553,6 @@
         font-weight: 600;
       }
 
-      /* RIGHT DRAWER - MOBILE LIST (Fixed) */
       .chart-drawer {
         position: fixed;
         top: 55px;
@@ -599,7 +570,6 @@
       .chart-drawer.open {
         right: 0;
       }
-
       .mob-house-row {
         display: flex;
         justify-content: space-between;
@@ -621,7 +591,6 @@
         font-size: 0.9rem;
         font-weight: 500;
       }
-
       .overlay {
         position: fixed;
         top: 0;
@@ -636,7 +605,6 @@
       .overlay.active {
         display: block;
       }
-
       .typing-indicator span {
         display: inline-block;
         width: 6px;
@@ -751,11 +719,8 @@
         >
           Settings
         </div>
-        <select
-          id="langSelector"
-          class="g-input"
-          style="padding: 10px; margin-bottom: 15px"
-        >
+
+        <select id="langSelector" class="big-select">
           <option value="Hinglish">Hinglish (Roman)</option>
           <option value="Hindi">Hindi (Devanagari)</option>
           <option value="English">English</option>
@@ -854,9 +819,8 @@
           <div class="msg-row ai">
             <div class="avatar ai"><i class="fa-solid fa-robot"></i></div>
             <div class="msg-content">
-              <strong>Namaste! I am Origo.</strong><br />
-              I have analyzed the charts. Ask me anything about Career, Marriage
-              or Past Life.
+              <strong>Namaste! I am Origo.</strong><br />I have analyzed the
+              charts. Ask me anything about Career, Marriage or Past Life.
             </div>
           </div>
         </div>
@@ -914,7 +878,6 @@
         currentData = null,
         responseLength = "short";
 
-      // --- AUTH & INIT ---
       auth.onAuthStateChanged(async (user) => {
         if (user) {
           currentUser = user;
@@ -927,7 +890,6 @@
             await loadUserData(user.uid);
             updateUIForUser("MY CHART", false);
           }
-
           db.collection("users")
             .doc(user.uid)
             .onSnapshot((doc) => {
@@ -970,25 +932,20 @@
           : "none";
       }
 
-      // --- VISUALIZATION ---
       function renderCharts(data) {
         if (!data || !data.charts || !data.charts.D1) return;
         const d1 = data.charts.D1;
         const strip = document.getElementById("d1Summary");
         let html = "";
-
         const ascSign = d1["Asc"] || d1["Ascendant"];
         let houses = {};
         for (let i = 1; i <= 12; i++) houses[i] = [];
-
         for (const [planet, sign] of Object.entries(d1)) {
           if (planet === "Asc" || planet === "Ascendant") continue;
           let diff = sign - ascSign;
           if (diff < 0) diff += 12;
           houses[diff + 1].push(planet.substring(0, 3));
         }
-
-        // 1. Desktop Horizontal Strip
         for (let i = 1; i <= 12; i++) {
           if (houses[i].length > 0) {
             html += `<div class="summary-item"><span class="house">${getOrdinal(
@@ -999,8 +956,6 @@
           }
         }
         strip.innerHTML = html;
-
-        // 2. Mobile Vertical List (New Logic)
         renderMobileList(houses);
       }
       function getOrdinal(n) {
@@ -1008,13 +963,10 @@
         const v = n % 100;
         return n + (s[(v - 20) % 10] || s[v] || s[0]);
       }
-
       function renderMobileList(houses) {
         const listContainer = document.getElementById("mobilePlanetList");
-        listContainer.innerHTML = ""; // Clear
-
+        listContainer.innerHTML = "";
         for (let i = 1; i <= 12; i++) {
-          // Only show occupied houses
           if (houses[i].length > 0) {
             const row = document.createElement("div");
             row.className = "mob-house-row";
@@ -1024,20 +976,16 @@
             listContainer.appendChild(row);
           }
         }
-
-        // Handle empty chart case
         if (listContainer.innerHTML === "") {
           listContainer.innerHTML =
             "<p style='color:#666;text-align:center;'>No planets found.</p>";
         }
       }
 
-      // --- LOGIC: CHAT & COST ---
       async function sendMessage(text = null) {
         const input = document.getElementById("userQuery");
         const query = text || input.value.trim();
         if (!query) return;
-
         addMessageToChat(query, "user");
         input.value = "";
         await callAI(query, "D1");
@@ -1045,16 +993,14 @@
 
       async function triggerChartAnalysis(chartType) {
         if (window.innerWidth < 768) closeDrawers();
-
         const library = {
           D1: "Analyze D1 (Lagna Chart). Core personality.",
-          D2: "Analyze D2 (Hora Chart). Wealth and D1 Combined.",
-          D9: "Analyze D9 (Navamsha). Marriage and D1 combined",
-          D10: "Analyze D10 (Dashamsha). Career and D1 combined",
-          D24: "Analyze D24 (Chaturvimshamsha). Education and D1 combined",
-          D60: "Analyze D60 (Shashtyamsha). Past Life and D1 combined",
+          D2: "Analyze D2 (Hora Chart). Wealth.",
+          D9: "Analyze D9 (Navamsha). Marriage.",
+          D10: "Analyze D10 (Dashamsha). Career.",
+          D24: "Analyze D24. Education.",
+          D60: "Analyze D60. Past Life.",
         };
-
         const msg = library[chartType] || `Analyze my ${chartType} chart.`;
         addMessageToChat(msg, "user");
         await callAI(msg, chartType);
@@ -1064,7 +1010,6 @@
         const sendBtn = document.querySelector(".btn-send");
         sendBtn.style.opacity = "0.5";
         sendBtn.disabled = true;
-
         const loadId = "load_" + Date.now();
         const chatWin = document.getElementById("chatWindow");
         const loadDiv = document.createElement("div");
@@ -1075,34 +1020,27 @@
         chatWin.scrollTop = chatWin.scrollHeight;
 
         let cost = activeUid === currentUser.uid ? 1 : 5;
-
-        // 1. DEPTH LOGIC CUSTOMIZE KARO (YAHAN CHANGE HAI 👇)
         let depthInstruction = "";
-        if (responseLength === "short") {
+        if (responseLength === "short")
           depthInstruction =
-            "Keep it extremely concise. Max 5-10 sentences. No fluff."; // <-- Yahan "Short" ko define kar
-        } else if (responseLength === "moderate") {
+            "Keep it extremely concise. Max 5-10 sentences. No fluff.";
+        else if (responseLength === "moderate")
           depthInstruction =
             "Standard detailed analysis. Balance between depth and brevity.";
-        } else if (responseLength === "detailed") {
-          cost *= 2; // Double Cost logic
+        else if (responseLength === "detailed") {
+          cost *= 2;
           depthInstruction =
             "Comprehensive, deep dive analysis with full explanations.";
         }
 
+        // --- FIXED LANGUAGE INSTRUCTION ---
         const lang = document.getElementById("langSelector").value;
-
-        // 2. SYSTEM MSG MEIN "depthInstruction" USE KARO
-        const systemMsg = `${message}. 
-         [SYSTEM RULES]: 
-         1. Language: ${lang} (IMPORTANT: If 'Hinglish', use Roman script mixed with Hindi). 
-         2. Depth: ${depthInstruction}.  <-- (Ab ye tumhara wala instruction use karega)
-         3. FORMAT: 
-            - Use <h3> for headings.
-            - Use Markdown tables for data.
-            - Use <b> for key terms.
-            - Insert '---' after sections.
-         4. FOLLOW-UP: End with 3 suggestions: <<<Q1 | Q2 | Q3>>>.`;
+        const systemMsg = `[STRICT INSTRUCTION]: Respond ONLY in ${lang}.
+        ${message}. 
+         [RULES]: 
+         1. Language: ${lang} (If Hinglish: Roman Hindi + English). 
+         2. Depth: ${depthInstruction}.
+         3. FOLLOW-UP: End with 3 suggestions: <<<Q1 | Q2 | Q3>>>.`;
 
         try {
           const res = await fetch("/api/chat_analysis", {
@@ -1118,15 +1056,12 @@
           });
           const data = await res.json();
           document.getElementById(loadId).remove();
-
-          if (data.error === "low_balance") {
+          if (data.error === "low_balance")
             addMessageToChat(
               `⚠️ **Insufficient Points**<br>Cost: ${cost} | Balance: Low`,
               "ai"
             );
-          } else {
-            addMessageToChat(data.reply, "ai");
-          }
+          else addMessageToChat(data.reply, "ai");
         } catch (e) {
           document.getElementById(loadId).remove();
           addMessageToChat("Error connecting.", "ai");
@@ -1139,14 +1074,12 @@
         const chatWin = document.getElementById("chatWindow");
         let content = text;
         let suggestions = [];
-
         if (sender === "ai") {
           const match = text.match(/<<<([\s\S]*?)>>>/);
           if (match) {
             suggestions = match[1].split("|").map((s) => s.trim());
             content = text.replace(match[0], "");
           }
-          // USE MARKED.JS
           try {
             content = marked.parse(content);
           } catch (e) {
@@ -1155,14 +1088,12 @@
         } else {
           content = content.replace(/\n/g, "<br>");
         }
-
         const div = document.createElement("div");
         div.className = `msg-row ${sender}`;
         div.innerHTML = `<div class="avatar ${sender}"><i class="fa-solid fa-${
           sender === "ai" ? "robot" : "user"
         }"></i></div><div class="msg-content">${content}</div>`;
         chatWin.appendChild(div);
-
         if (suggestions.length > 0) {
           const chipCont = document.createElement("div");
           chipCont.className = "followup-container";
@@ -1178,7 +1109,6 @@
         chatWin.scrollTop = chatWin.scrollHeight;
       }
 
-      // --- GUEST ---
       async function analyzeGuest(e) {
         e.preventDefault();
         const btn = document.querySelector(".btn-submit-guest");
@@ -1193,7 +1123,6 @@
         fd.append("place", document.getElementById("gPlace").value);
         fd.append("gender", document.getElementById("gGender").value);
         fd.append("status", "single");
-
         try {
           const res = await fetch("/api/save_user_data", {
             method: "POST",
