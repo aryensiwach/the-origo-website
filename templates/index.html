@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Origo | Decode Your Destiny</title>
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
@@ -13,6 +14,7 @@
       type="image/x-icon"
       href="{{ url_for('static', filename='favicon.ico') }}"
     />
+
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -23,22 +25,56 @@
     />
 
     <style>
+      /* Fix Modal Visibility */
       .modal {
         display: none;
         position: fixed;
-        z-index: 1000;
+        z-index: 2000;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.85);
         backdrop-filter: blur(5px);
         align-items: center;
         justify-content: center;
       }
       .modal.active {
         display: flex !important;
+      }
+
+      /* Fix Mobile Menu Logic */
+      @media (max-width: 768px) {
+        .nav-links {
+          position: fixed;
+          top: 0;
+          right: -100%; /* Hidden by default */
+          height: 100vh;
+          width: 70%;
+          background: #0d0d0d;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          transition: right 0.3s ease;
+          z-index: 1000;
+          border-left: 1px solid #333;
+        }
+        .nav-links.active {
+          right: 0 !important; /* Show when active */
+        }
+        .close-menu {
+          display: block;
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          font-size: 1.5rem;
+          cursor: pointer;
+        }
+        .hamburger {
+          display: block;
+          font-size: 1.5rem;
+          cursor: pointer;
+        }
       }
     </style>
   </head>
@@ -56,20 +92,18 @@
           />
           <span class="brand-name">The Origo</span>
         </div>
+
         <div class="nav-links" id="navLinks">
-          <i
-            class="fa-solid fa-xmark close-menu"
-            id="closeMenuBtn"
-            onclick="toggleMenu()"
-          ></i>
-          <a href="#">Home</a>
+          <i class="fa-solid fa-xmark close-menu" onclick="toggleMenu()"></i>
+          <a href="#" onclick="toggleMenu()">Home</a>
           <a
             href="{{ url_for('soulmate') }}"
             style="color: #ff6b6b; font-weight: 600"
             >Find Soulmate ❤️</a
           >
-          <a href="#features">Process</a>
-          <a href="#faq">FAQs</a>
+          <a href="#features" onclick="toggleMenu()">Process</a>
+          <a href="#faq" onclick="toggleMenu()">FAQs</a>
+
           <a
             href="#"
             onclick="openModal('loginModal')"
@@ -77,11 +111,18 @@
             id="mobileLoginBtn"
             >Login</a
           >
+
           <div
             id="mobileUserSection"
-            style="display: none; width: 100%; text-align: center"
+            style="
+              display: none;
+              width: 100%;
+              text-align: center;
+              margin-top: 20px;
+            "
           ></div>
         </div>
+
         <div class="nav-right">
           <div id="desktopAuthBtns">
             <a
@@ -89,9 +130,11 @@
               onclick="openModal('loginModal')"
               class="btn-login-desktop trigger-join"
               id="desktopLoginBtn"
-              >Login <i class="fa-solid fa-right-to-bracket"></i
-            ></a>
+            >
+              Login <i class="fa-solid fa-right-to-bracket"></i>
+            </a>
           </div>
+
           <div
             id="desktopUserSection"
             style="display: none; align-items: center; gap: 15px"
@@ -112,18 +155,17 @@
                 border: 1px solid var(--gold);
                 color: var(--gold);
                 padding: 5px 15px;
+                cursor: pointer;
               "
             >
               Logout <i class="fa-solid fa-power-off"></i>
             </button>
           </div>
-          <i
-            class="fa-solid fa-bars hamburger"
-            id="hamburgerBtn"
-            onclick="toggleMenu()"
-          ></i>
+
+          <i class="fa-solid fa-bars hamburger" onclick="toggleMenu()"></i>
         </div>
       </nav>
+
       <div class="beta-bar">
         <p>
           <i class="fa-solid fa-fire-flame-curved blink"></i> BETA LAUNCH OFFER:
@@ -144,14 +186,6 @@
         A fusion of <strong>Real Astrologers & AI</strong>. 100% Calculation
         Accuracy for D-1 to D-60 Charts.
       </p>
-      <div class="hero-highlights">
-        <div class="highlight-box">
-          <i class="fa-solid fa-bullseye"></i> 95% Accurate Predictions
-        </div>
-        <div class="highlight-box">
-          <i class="fa-solid fa-heart"></i> Know Your Soulmate
-        </div>
-      </div>
       <div class="cta-group">
         <button type="button" class="btn-reveal" onclick="handleMainAction()">
           Reveal My Truth <i class="fa-solid fa-arrow-right"></i>
@@ -195,27 +229,27 @@
       </div>
     </section>
 
-    <footer class="main-footer">
-      <div class="footer-content">
-        <div class="footer-col brand-col">
-          <div class="footer-logo">
-            <i class="fa-solid fa-star-of-life"></i> The Origo
-          </div>
-          <p>Most accurate AI Vedic Astrology engine.</p>
-        </div>
-      </div>
-      <div class="footer-bottom"><p>&copy; 2025 The Origo AI.</p></div>
-    </footer>
-
     <div id="selectionModal" class="modal">
-      <div class="modal-content" style="text-align: center; max-width: 420px">
-        <span class="close-btn" onclick="closeModal('selectionModal')"
+      <div
+        class="modal-content"
+        style="
+          text-align: center;
+          max-width: 420px;
+          background: #1a1a1a;
+          padding: 30px;
+          border-radius: 15px;
+          border: 1px solid #333;
+        "
+      >
+        <span
+          class="close-btn"
+          onclick="closeModal('selectionModal')"
+          style="float: right; cursor: pointer; font-size: 1.5rem; color: #aaa"
           >&times;</span
         >
-        <div class="modal-header">
-          <h2>Whose Future? 🔮</h2>
-          <p>Select whose chart you want to decode.</p>
-        </div>
+        <h2 style="color: var(--gold); margin-bottom: 10px">
+          Whose Future? 🔮
+        </h2>
         <div
           style="
             margin: 30px 0;
@@ -230,11 +264,14 @@
             style="
               background: var(--gold);
               color: #000;
-              justify-content: center;
-              gap: 10px;
+              padding: 12px;
+              border: none;
+              border-radius: 8px;
+              font-weight: bold;
+              cursor: pointer;
             "
           >
-            <i class="fa-solid fa-user"></i> My Chart Analysis
+            My Chart Analysis
           </button>
           <button
             onclick="proceedAnalysis('guest')"
@@ -243,91 +280,191 @@
               background: transparent;
               border: 1px solid var(--gold);
               color: var(--gold);
-              justify-content: center;
-              gap: 10px;
+              padding: 12px;
+              border-radius: 8px;
+              font-weight: bold;
+              cursor: pointer;
             "
           >
-            <i class="fa-solid fa-user-group"></i> Analyze Someone Else
+            Analyze Someone Else
           </button>
         </div>
       </div>
     </div>
 
     <div id="loginModal" class="modal">
-      <div class="modal-content" style="text-align: center; max-width: 400px">
-        <span class="close-btn" onclick="closeModal('loginModal')"
+      <div
+        class="modal-content"
+        style="
+          text-align: center;
+          max-width: 400px;
+          background: #1a1a1a;
+          padding: 30px;
+          border-radius: 15px;
+          border: 1px solid #333;
+        "
+      >
+        <span
+          class="close-btn"
+          onclick="closeModal('loginModal')"
+          style="float: right; cursor: pointer; font-size: 1.5rem; color: #aaa"
           >&times;</span
         >
-        <div class="modal-header">
-          <h2>Welcome Seeker ✨</h2>
-          <p>Login to securely save your Charts.</p>
-        </div>
-        <div style="margin: 30px 0">
-          <button
-            id="googleLoginBtn"
-            class="btn-submit"
-            style="
-              background: white;
-              color: #333;
-              border: 1px solid #ddd;
-              justify-content: center;
-              gap: 10px;
-            "
-            onclick="signInWithGoogle()"
-          >
-            <i class="fa-brands fa-google" style="color: #db4437"></i> Continue
-            with Google
-          </button>
-        </div>
+        <h2 style="color: var(--gold); margin-bottom: 10px">
+          Welcome Seeker ✨
+        </h2>
+        <p style="color: #ccc; margin-bottom: 20px">
+          Login to securely save your Charts.
+        </p>
+        <button
+          onclick="signInWithGoogle()"
+          class="btn-submit"
+          style="
+            background: white;
+            color: #333;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+          "
+        >
+          <i class="fa-brands fa-google" style="color: #db4437"></i> Continue
+          with Google
+        </button>
       </div>
     </div>
 
     <div id="onboardingModal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('onboardingModal')"
-          >&times;</span
+      <div
+        class="modal-content"
+        style="
+          background: #1a1a1a;
+          padding: 25px;
+          border-radius: 15px;
+          border: 1px solid #333;
+          max-width: 450px;
+        "
+      >
+        <h2 style="color: var(--gold); margin-bottom: 15px; text-align: center">
+          Setup Your Profile 🔮
+        </h2>
+        <form
+          id="onboardingForm"
+          onsubmit="submitOnboarding(event)"
+          style="display: flex; flex-direction: column; gap: 15px"
         >
-        <div class="modal-header">
-          <h2>Setup Your Profile 🔮</h2>
-          <p>Enter accurate Birth Details</p>
-        </div>
-        <form id="onboardingForm" onsubmit="submitOnboarding(event)">
           <input type="hidden" id="userUid" name="uid" />
           <input type="hidden" id="userEmail" name="email" />
-          <div class="input-group">
-            <label>Full Name</label
-            ><input type="text" id="userName" name="name" required />
+
+          <input
+            type="text"
+            id="userName"
+            name="name"
+            placeholder="Full Name"
+            required
+            style="
+              padding: 10px;
+              background: #222;
+              border: 1px solid #444;
+              color: white;
+              border-radius: 5px;
+            "
+          />
+
+          <div style="display: flex; gap: 10px">
+            <input
+              type="date"
+              name="dob"
+              required
+              style="
+                flex: 1;
+                padding: 10px;
+                background: #222;
+                border: 1px solid #444;
+                color: white;
+                border-radius: 5px;
+              "
+            />
+            <input
+              type="time"
+              name="time"
+              required
+              style="
+                flex: 1;
+                padding: 10px;
+                background: #222;
+                border: 1px solid #444;
+                color: white;
+                border-radius: 5px;
+              "
+            />
           </div>
-          <div class="row-inputs">
-            <div class="input-group">
-              <label>DOB</label><input type="date" name="dob" required />
-            </div>
-            <div class="input-group">
-              <label>Time</label><input type="time" name="time" required />
-            </div>
+
+          <input
+            type="text"
+            name="place"
+            placeholder="Birth City"
+            required
+            style="
+              padding: 10px;
+              background: #222;
+              border: 1px solid #444;
+              color: white;
+              border-radius: 5px;
+            "
+          />
+
+          <div style="display: flex; gap: 10px">
+            <select
+              name="gender"
+              style="
+                flex: 1;
+                padding: 10px;
+                background: #222;
+                border: 1px solid #444;
+                color: white;
+                border-radius: 5px;
+              "
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <select
+              name="status"
+              style="
+                flex: 1;
+                padding: 10px;
+                background: #222;
+                border: 1px solid #444;
+                color: white;
+                border-radius: 5px;
+              "
+            >
+              <option value="single">Single</option>
+              <option value="relationship">Relationship</option>
+            </select>
           </div>
-          <div class="input-group">
-            <label>Place</label
-            ><input type="text" name="place" placeholder="City" required />
-          </div>
-          <div class="row-inputs">
-            <div class="input-group">
-              <label>Gender</label
-              ><select name="gender">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Status</label
-              ><select name="status">
-                <option value="single">Single</option>
-                <option value="relationship">In Relationship</option>
-                <option value="married">Married</option>
-              </select>
-            </div>
-          </div>
-          <button type="submit" class="btn-submit">Generate My Charts</button>
+
+          <button
+            type="submit"
+            style="
+              background: var(--gold);
+              color: black;
+              padding: 12px;
+              border: none;
+              border-radius: 8px;
+              font-weight: bold;
+              cursor: pointer;
+            "
+          >
+            Generate My Charts
+          </button>
         </form>
       </div>
     </div>
@@ -337,7 +474,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-      // 1. FIREBASE INIT (Using the injected Key)
+      // 1. Initialize Firebase (Flask injects key here)
       const firebaseConfig = {
         apiKey: "{{ fb_key }}",
         authDomain: "internhub-c469b.firebaseapp.com",
@@ -346,157 +483,117 @@
         messagingSenderId: "332430290715",
         appId: "1:332430290715:web:d4c7725ebe94785d156dbe",
       };
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+      // Initialize Firebase safely
+      if (typeof firebase !== "undefined" && !firebase.apps.length) {
+        try {
+          firebase.initializeApp(firebaseConfig);
+          console.log("Firebase Initialized");
+        } catch (e) {
+          console.error("Firebase Init Error", e);
+        }
+      }
+
       const auth = firebase.auth();
       const db = firebase.firestore();
       const provider = new firebase.auth.GoogleAuthProvider();
 
-      // 2. CONSTELLATION ANIMATION
-      const canvas = document.getElementById("constellation-canvas");
-      if (canvas) {
-        const ctx = canvas.getContext("2d");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        let particles = [];
-        class Particle {
-          constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 0.1;
-            this.speedX = Math.random() * 0.5 - 0.25;
-            this.speedY = Math.random() * 0.5 - 0.25;
-          }
-          update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-            if (this.y > canvas.height || this.y < 0)
-              this.speedY = -this.speedY;
-          }
-          draw() {
-            ctx.fillStyle = "#d4a373";
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-          }
+      // 2. Mobile Menu Logic (HAMBURGER FIX)
+      window.toggleMenu = function () {
+        const nav = document.getElementById("navLinks");
+        if (nav.classList.contains("active")) {
+          nav.classList.remove("active");
+        } else {
+          nav.classList.add("active");
         }
-        function init() {
-          particles = [];
-          for (let i = 0; i < (canvas.width * canvas.height) / 9000; i++)
-            particles.push(new Particle());
-        }
-        function animate() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          let g = ctx.createRadialGradient(
-            canvas.width / 2,
-            canvas.height / 2,
-            0,
-            canvas.width / 2,
-            canvas.height / 2,
-            canvas.width
-          );
-          g.addColorStop(0, "#064e3b");
-          g.addColorStop(1, "#022c22");
-          ctx.fillStyle = g;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          for (let i = 0; i < particles.length; i++) {
-            particles[i].update();
-            particles[i].draw();
-          }
-          requestAnimationFrame(animate);
-        }
-        window.addEventListener("resize", () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-          init();
-        });
-        init();
-        animate();
-      }
-
-      // 3. UI LOGIC
-      window.openModal = (id) =>
-        document.getElementById(id).classList.add("active");
-      window.closeModal = (id) =>
-        document.getElementById(id).classList.remove("active");
-      window.toggleMenu = () => {
-        const n = document.getElementById("navLinks");
-        n.style.display = n.style.display === "flex" ? "none" : "flex";
       };
 
-      // 4. AUTH & NAVIGATION
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          toggleAuthUI(true, user);
-        } else {
-          toggleAuthUI(false, null);
+      // 3. Modal Logic
+      window.openModal = (id) => {
+        document.getElementById(id).classList.add("active");
+        if (id === "loginModal") {
+          const nav = document.getElementById("navLinks");
+          nav.classList.remove("active"); // Close menu if open
         }
-      });
+      };
+      window.closeModal = (id) =>
+        document.getElementById(id).classList.remove("active");
 
-      function toggleAuthUI(isLoggedIn, user) {
+      // 4. Auth & UI Updates
+      auth.onAuthStateChanged((user) => {
         const deskAuth = document.getElementById("desktopAuthBtns");
         const deskUser = document.getElementById("desktopUserSection");
         const mobLogin = document.getElementById("mobileLoginBtn");
         const mobUser = document.getElementById("mobileUserSection");
 
-        if (isLoggedIn) {
+        if (user) {
+          // Logged In
           if (deskAuth) deskAuth.style.display = "none";
           if (deskUser) {
             deskUser.style.display = "flex";
             document.querySelector(".desktopUserName").innerText =
               user.displayName.split(" ")[0];
           }
-          if (mobLogin)
-            mobLogin.style.setProperty("display", "none", "important");
+
+          if (mobLogin) mobLogin.style.display = "none";
           if (mobUser) {
             mobUser.style.display = "block";
-            mobUser.innerHTML = `<p style="color:#gold">Hi ${
-              user.displayName.split(" ")[0]
-            }</p><button onclick="logoutUser()" style="color:red; background:none; border:1px solid red; padding:5px; margin-top:5px; width:100%">Logout</button>`;
+            mobUser.innerHTML = `
+                    <p style="color:var(--gold); margin-bottom:10px;">Hi, ${
+                      user.displayName.split(" ")[0]
+                    }</p>
+                    <button onclick="logoutUser()" style="color:#ff4d4d; border:1px solid #ff4d4d; background:none; padding:8px 20px; border-radius:5px;">Logout</button>
+                `;
           }
         } else {
+          // Logged Out
           if (deskAuth) deskAuth.style.display = "block";
           if (deskUser) deskUser.style.display = "none";
           if (mobLogin) mobLogin.style.display = "block";
           if (mobUser) mobUser.style.display = "none";
         }
-      }
+      });
 
-      window.handleMainAction = () => openModal("selectionModal");
-
-      window.proceedAnalysis = (mode) => {
-        closeModal("selectionModal");
-        sessionStorage.setItem("analysisMode", mode);
-        if (mode === "guest" && auth.currentUser) {
-          window.location.href = "/dashboard?mode=guest";
-          return;
-        }
-        if (!auth.currentUser) {
-          openModal("loginModal");
-        } else {
-          checkUserProfile(auth.currentUser);
-        }
-      };
-
-      window.signInWithGoogle = () => {
+      // 5. Login Function
+      window.signInWithGoogle = function () {
         auth
           .signInWithPopup(provider)
-          .then((res) => {
+          .then((result) => {
             closeModal("loginModal");
-            checkUserProfile(res.user);
+            // Login success, check where to go
+            const mode = sessionStorage.getItem("analysisMode");
+            if (mode === "guest") {
+              window.location.href = "/dashboard?mode=guest";
+            } else {
+              checkUserProfile(result.user);
+            }
           })
-          .catch((e) => alert(e.message));
+          .catch((error) => {
+            console.error(error);
+            alert("Login Failed: " + error.message);
+          });
       };
 
       window.logoutUser = () =>
         auth.signOut().then(() => (window.location.href = "/"));
 
-      async function checkUserProfile(user) {
-        const mode = sessionStorage.getItem("analysisMode");
-        if (mode === "guest") {
-          window.location.href = "/dashboard?mode=guest";
-          return;
+      // 6. Action Handlers
+      window.handleMainAction = () => openModal("selectionModal");
+
+      window.proceedAnalysis = (mode) => {
+        closeModal("selectionModal");
+        sessionStorage.setItem("analysisMode", mode);
+
+        const user = auth.currentUser;
+        if (user) {
+          if (mode === "guest") window.location.href = "/dashboard?mode=guest";
+          else checkUserProfile(user);
+        } else {
+          openModal("loginModal");
         }
+      };
+
+      async function checkUserProfile(user) {
         try {
           const doc = await db.collection("users").doc(user.uid).get();
           if (doc.exists) {
@@ -529,17 +626,17 @@
             btn.innerText = "Try Again";
           }
         } catch (err) {
-          alert("Error");
+          alert("Server Error");
           btn.innerText = "Try Again";
         }
       };
 
-      // Timer
+      // 7. Timer Logic
       function startCountdown(duration, display) {
         let timer = duration,
           m,
           s;
-        setInterval(function () {
+        setInterval(() => {
           m = parseInt(timer / 60, 10);
           s = parseInt(timer % 60, 10);
           m = m < 10 ? "0" + m : m;
@@ -548,10 +645,10 @@
           if (--timer < 0) timer = duration;
         }, 1000);
       }
-      window.addEventListener("load", function () {
-        const display = document.querySelector("#timer");
-        if (display) startCountdown(60 * 15, display);
-      });
+      window.onload = () => {
+        const d = document.querySelector("#timer");
+        if (d) startCountdown(900, d);
+      };
     </script>
   </body>
 </html>
