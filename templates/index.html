@@ -14,7 +14,6 @@
       type="image/x-icon"
       href="{{ url_for('static', filename='favicon.ico') }}"
     />
-
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -25,16 +24,22 @@
     />
 
     <style>
-      /* Fix Modal Visibility */
+      /* --- GLOBAL Z-INDEX FIXES --- */
+      .main-header {
+        position: relative;
+        z-index: 100;
+      }
+
+      /* FIXED: Z-index lowered so menu appears on top */
       .modal {
         display: none;
         position: fixed;
-        z-index: 2000;
+        z-index: 10000;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.85);
+        background-color: rgba(0, 0, 0, 0.9);
         backdrop-filter: blur(5px);
         align-items: center;
         justify-content: center;
@@ -43,38 +48,120 @@
         display: flex !important;
       }
 
-      /* Fix Mobile Menu Logic */
+      /* --- COMPACT FORM STYLING --- */
+      .form-content {
+        background: #121212;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid #333;
+        width: 90%;
+        max-width: 400px; /* Slightly wider for better reading */
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Scrollbar styling for form */
+      .form-content::-webkit-scrollbar {
+        width: 5px;
+      }
+      .form-content::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 5px;
+      }
+
+      /* FIXED: Increased margin for vertical spacing */
+      .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+        width: 100%;
+      }
+
+      .form-label {
+        display: block;
+        color: #bbb; /* Lighter color for better visibility */
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 12px;
+        background: #1e1e1e;
+        border: 1px solid #333;
+        color: #fff;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s ease;
+        box-sizing: border-box; /* Ensures padding doesn't overflow width */
+      }
+
+      .form-input:focus {
+        border-color: var(--gold);
+        background: #252525;
+      }
+
+      .btn-save {
+        background: var(--gold);
+        color: #000;
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: transform 0.2s;
+      }
+
+      .btn-save:active {
+        transform: scale(0.98);
+      }
+
+      /* --- MOBILE NAVBAR FIX (High Z-Index) --- */
       @media (max-width: 768px) {
         .nav-links {
           position: fixed;
           top: 0;
-          right: -100%; /* Hidden by default */
+          right: -100%;
           height: 100vh;
-          width: 70%;
-          background: #0d0d0d;
+          width: 80%;
+          background: #0a0a0a;
           flex-direction: column;
-          justify-content: center;
+          justify-content: flex-start;
           align-items: center;
-          transition: right 0.3s ease;
-          z-index: 1000;
-          border-left: 1px solid #333;
+          padding-top: 80px;
+          gap: 20px;
+          transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 99999 !important; /* FIXED: Much higher than everything else */
+          border-left: 1px solid #222;
+          box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
         }
         .nav-links.active {
-          right: 0 !important; /* Show when active */
+          right: 0 !important;
         }
         .close-menu {
           display: block;
           position: absolute;
-          top: 20px;
-          right: 20px;
-          font-size: 1.5rem;
+          top: 25px;
+          right: 25px;
+          font-size: 2rem;
+          color: #fff;
           cursor: pointer;
         }
-        .hamburger {
-          display: block;
-          font-size: 1.5rem;
-          cursor: pointer;
+
+        /* Mobile Specific Input Adjustments */
+        .form-content {
+          padding: 20px;
+          width: 95%;
         }
+        .form-input {
+          padding: 14px;
+          font-size: 16px;
+        } /* Prevent zoom on iOS */
       }
     </style>
   </head>
@@ -103,7 +190,6 @@
           >
           <a href="#features" onclick="toggleMenu()">Process</a>
           <a href="#faq" onclick="toggleMenu()">FAQs</a>
-
           <a
             href="#"
             onclick="openModal('loginModal')"
@@ -111,14 +197,15 @@
             id="mobileLoginBtn"
             >Login</a
           >
-
           <div
             id="mobileUserSection"
             style="
               display: none;
-              width: 100%;
+              width: 85%;
               text-align: center;
-              margin-top: 20px;
+              margin-top: 10px;
+              border-top: 1px solid #222;
+              padding-top: 20px;
             "
           ></div>
         </div>
@@ -130,11 +217,9 @@
               onclick="openModal('loginModal')"
               class="btn-login-desktop trigger-join"
               id="desktopLoginBtn"
-            >
-              Login <i class="fa-solid fa-right-to-bracket"></i>
-            </a>
+              >Login <i class="fa-solid fa-right-to-bracket"></i
+            ></a>
           </div>
-
           <div
             id="desktopUserSection"
             style="display: none; align-items: center; gap: 15px"
@@ -147,6 +232,12 @@
                 >User</span
               ></span
             >
+            <i
+              class="fa-solid fa-pen-to-square"
+              onclick="openEditProfile()"
+              style="color: #aaa; cursor: pointer; padding: 5px"
+              title="Edit Profile"
+            ></i>
             <button
               onclick="logoutUser()"
               class="btn-login-desktop"
@@ -155,23 +246,21 @@
                 border: 1px solid var(--gold);
                 color: var(--gold);
                 padding: 5px 15px;
-                cursor: pointer;
               "
             >
-              Logout <i class="fa-solid fa-power-off"></i>
+              Logout
             </button>
           </div>
-
           <i class="fa-solid fa-bars hamburger" onclick="toggleMenu()"></i>
         </div>
       </nav>
 
       <div class="beta-bar">
         <p>
-          <i class="fa-solid fa-fire-flame-curved blink"></i> BETA LAUNCH OFFER:
-          Full Analysis is <span class="strike">₹200</span>
-          <span class="free-tag">FREE</span> for next
-          <span id="timer">15:00</span> Minutes!
+          <i class="fa-solid fa-fire-flame-curved blink"></i> BETA OFFER:
+          Analysis is <span class="strike">₹200</span>
+          <span class="free-tag">FREE</span> for
+          <span id="timer">15:00</span> mins!
         </p>
       </div>
     </header>
@@ -183,15 +272,15 @@
         >
       </h1>
       <p class="hero-sub">
-        A fusion of <strong>Real Astrologers & AI</strong>. 100% Calculation
-        Accuracy for D-1 to D-60 Charts.
+        A fusion of <strong>Real Astrologers & AI</strong>. 100% Accuracy for
+        D-1 to D-60 Charts.
       </p>
       <div class="cta-group">
         <button type="button" class="btn-reveal" onclick="handleMainAction()">
           Reveal My Truth <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
-      <p class="privacy-text">Result in 24 Hours • 100% Private</p>
+      <p class="privacy-text">100% Private & Secure</p>
     </div>
 
     <section id="features" class="section-features">
@@ -200,17 +289,17 @@
         <div class="feature-item">
           <i class="fa-solid fa-file-signature icon-3d"></i>
           <h3>1. Accurate Data</h3>
-          <p>We take exact Date & Time for precision.</p>
+          <p>Exact Date & Time for precision.</p>
         </div>
         <div class="feature-item">
           <i class="fa-solid fa-brain-circuit icon-3d"></i>
           <h3>2. Deep Scanning</h3>
-          <p>Our engine scans 5,000+ Vedic Rules.</p>
+          <p>Scans 5,000+ Vedic Rules.</p>
         </div>
         <div class="feature-item">
           <i class="fa-solid fa-comments icon-3d"></i>
-          <h3>3. Chat with Astrologer</h3>
-          <p>Get instant answers about your future.</p>
+          <h3>3. Instant Answers</h3>
+          <p>Chat with your AI Astrologer.</p>
         </div>
       </div>
     </section>
@@ -230,80 +319,39 @@
     </section>
 
     <div id="selectionModal" class="modal">
-      <div
-        class="modal-content"
-        style="
-          text-align: center;
-          max-width: 420px;
-          background: #1a1a1a;
-          padding: 30px;
-          border-radius: 15px;
-          border: 1px solid #333;
-        "
-      >
+      <div class="form-content" style="text-align: center">
         <span
           class="close-btn"
           onclick="closeModal('selectionModal')"
           style="float: right; cursor: pointer; font-size: 1.5rem; color: #aaa"
           >&times;</span
         >
-        <h2 style="color: var(--gold); margin-bottom: 10px">
+        <h2 style="color: var(--gold); margin-bottom: 20px">
           Whose Future? 🔮
         </h2>
-        <div
+        <button
+          onclick="proceedAnalysis('self')"
+          class="btn-save"
+          style="margin-bottom: 15px"
+        >
+          My Chart Analysis
+        </button>
+        <button
+          onclick="proceedAnalysis('guest')"
+          class="btn-save"
           style="
-            margin: 30px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
           "
         >
-          <button
-            onclick="proceedAnalysis('self')"
-            class="btn-submit"
-            style="
-              background: var(--gold);
-              color: #000;
-              padding: 12px;
-              border: none;
-              border-radius: 8px;
-              font-weight: bold;
-              cursor: pointer;
-            "
-          >
-            My Chart Analysis
-          </button>
-          <button
-            onclick="proceedAnalysis('guest')"
-            class="btn-submit"
-            style="
-              background: transparent;
-              border: 1px solid var(--gold);
-              color: var(--gold);
-              padding: 12px;
-              border-radius: 8px;
-              font-weight: bold;
-              cursor: pointer;
-            "
-          >
-            Analyze Someone Else
-          </button>
-        </div>
+          Analyze Someone Else
+        </button>
       </div>
     </div>
 
     <div id="loginModal" class="modal">
-      <div
-        class="modal-content"
-        style="
-          text-align: center;
-          max-width: 400px;
-          background: #1a1a1a;
-          padding: 30px;
-          border-radius: 15px;
-          border: 1px solid #333;
-        "
-      >
+      <div class="form-content" style="text-align: center">
         <span
           class="close-btn"
           onclick="closeModal('loginModal')"
@@ -313,21 +361,15 @@
         <h2 style="color: var(--gold); margin-bottom: 10px">
           Welcome Seeker ✨
         </h2>
-        <p style="color: #ccc; margin-bottom: 20px">
+        <p style="color: #888; margin-bottom: 25px; font-size: 0.9rem">
           Login to securely save your Charts.
         </p>
         <button
           onclick="signInWithGoogle()"
-          class="btn-submit"
+          class="btn-save"
           style="
             background: white;
             color: #333;
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -341,130 +383,103 @@
     </div>
 
     <div id="onboardingModal" class="modal">
-      <div
-        class="modal-content"
-        style="
-          background: #1a1a1a;
-          padding: 25px;
-          border-radius: 15px;
-          border: 1px solid #333;
-          max-width: 450px;
-        "
-      >
-        <h2 style="color: var(--gold); margin-bottom: 15px; text-align: center">
-          Setup Your Profile 🔮
-        </h2>
-        <form
-          id="onboardingForm"
-          onsubmit="submitOnboarding(event)"
-          style="display: flex; flex-direction: column; gap: 15px"
+      <div class="form-content">
+        <span
+          class="close-btn"
+          onclick="closeModal('onboardingModal')"
+          style="float: right; cursor: pointer; font-size: 1.5rem; color: #aaa"
+          >&times;</span
         >
+        <h2
+          style="
+            color: var(--gold);
+            margin-bottom: 5px;
+            text-align: center;
+            font-size: 1.5rem;
+          "
+        >
+          Your Cosmic Profile 🔮
+        </h2>
+        <p
+          style="
+            color: #777;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-bottom: 20px;
+          "
+        >
+          Enter precise details for accurate predictions.
+        </p>
+
+        <form id="onboardingForm" onsubmit="submitOnboarding(event)">
           <input type="hidden" id="userUid" name="uid" />
           <input type="hidden" id="userEmail" name="email" />
 
-          <input
-            type="text"
-            id="userName"
-            name="name"
-            placeholder="Full Name"
-            required
-            style="
-              padding: 10px;
-              background: #222;
-              border: 1px solid #444;
-              color: white;
-              border-radius: 5px;
-            "
-          />
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input
+              type="text"
+              id="userName"
+              name="name"
+              class="form-input"
+              placeholder="Enter your name"
+              required
+            />
+          </div>
 
-          <div style="display: flex; gap: 10px">
+          <div class="form-group">
+            <label class="form-label">Date of Birth</label>
             <input
               type="date"
+              id="userDob"
               name="dob"
+              class="form-input"
               required
-              style="
-                flex: 1;
-                padding: 10px;
-                background: #222;
-                border: 1px solid #444;
-                color: white;
-                border-radius: 5px;
-              "
             />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Time of Birth</label>
             <input
               type="time"
+              id="userTime"
               name="time"
+              class="form-input"
               required
-              style="
-                flex: 1;
-                padding: 10px;
-                background: #222;
-                border: 1px solid #444;
-                color: white;
-                border-radius: 5px;
-              "
             />
           </div>
 
-          <input
-            type="text"
-            name="place"
-            placeholder="Birth City"
-            required
-            style="
-              padding: 10px;
-              background: #222;
-              border: 1px solid #444;
-              color: white;
-              border-radius: 5px;
-            "
-          />
+          <div class="form-group">
+            <label class="form-label">Place of Birth</label>
+            <input
+              type="text"
+              id="userPlace"
+              name="place"
+              class="form-input"
+              placeholder="City, State"
+              required
+            />
+          </div>
 
-          <div style="display: flex; gap: 10px">
-            <select
-              name="gender"
-              style="
-                flex: 1;
-                padding: 10px;
-                background: #222;
-                border: 1px solid #444;
-                color: white;
-                border-radius: 5px;
-              "
-            >
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select id="userGender" name="gender" class="form-input">
               <option value="male">Male</option>
               <option value="female">Female</option>
-            </select>
-            <select
-              name="status"
-              style="
-                flex: 1;
-                padding: 10px;
-                background: #222;
-                border: 1px solid #444;
-                color: white;
-                border-radius: 5px;
-              "
-            >
-              <option value="single">Single</option>
-              <option value="relationship">Relationship</option>
+              <option value="other">Other</option>
             </select>
           </div>
 
-          <button
-            type="submit"
-            style="
-              background: var(--gold);
-              color: black;
-              padding: 12px;
-              border: none;
-              border-radius: 8px;
-              font-weight: bold;
-              cursor: pointer;
-            "
-          >
-            Generate My Charts
-          </button>
+          <div class="form-group">
+            <label class="form-label">Relationship Status</label>
+            <select id="userStatus" name="status" class="form-input">
+              <option value="single">Single</option>
+              <option value="relationship">In Relationship</option>
+              <option value="married">Married</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-save">Generate Kundli & Save</button>
         </form>
       </div>
     </div>
@@ -474,7 +489,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-      // 1. Initialize Firebase (Flask injects key here)
       const firebaseConfig = {
         apiKey: "{{ fb_key }}",
         authDomain: "internhub-c469b.firebaseapp.com",
@@ -483,171 +497,216 @@
         messagingSenderId: "332430290715",
         appId: "1:332430290715:web:d4c7725ebe94785d156dbe",
       };
-
-      // Initialize Firebase safely
-      if (typeof firebase !== "undefined" && !firebase.apps.length) {
+      if (typeof firebase !== "undefined" && !firebase.apps.length)
         try {
           firebase.initializeApp(firebaseConfig);
-          console.log("Firebase Initialized");
-        } catch (e) {
-          console.error("Firebase Init Error", e);
-        }
-      }
+        } catch (e) {}
+      const auth = firebase.auth(),
+        db = firebase.firestore(),
+        provider = new firebase.auth.GoogleAuthProvider();
 
-      const auth = firebase.auth();
-      const db = firebase.firestore();
-      const provider = new firebase.auth.GoogleAuthProvider();
-
-      // 2. Mobile Menu Logic (HAMBURGER FIX)
-      window.toggleMenu = function () {
-        const nav = document.getElementById("navLinks");
-        if (nav.classList.contains("active")) {
-          nav.classList.remove("active");
-        } else {
-          nav.classList.add("active");
-        }
-      };
-
-      // 3. Modal Logic
+      // UI Helpers
+      window.toggleMenu = () =>
+        document.getElementById("navLinks").classList.toggle("active");
       window.openModal = (id) => {
         document.getElementById(id).classList.add("active");
-        if (id === "loginModal") {
-          const nav = document.getElementById("navLinks");
-          nav.classList.remove("active"); // Close menu if open
-        }
+        if (id === "loginModal")
+          document.getElementById("navLinks").classList.remove("active");
       };
       window.closeModal = (id) =>
         document.getElementById(id).classList.remove("active");
 
-      // 4. Auth & UI Updates
+      // Auth Logic
       auth.onAuthStateChanged((user) => {
-        const deskAuth = document.getElementById("desktopAuthBtns");
-        const deskUser = document.getElementById("desktopUserSection");
-        const mobLogin = document.getElementById("mobileLoginBtn");
-        const mobUser = document.getElementById("mobileUserSection");
-
+        const dAuth = document.getElementById("desktopAuthBtns"),
+          dUser = document.getElementById("desktopUserSection");
+        const mLogin = document.getElementById("mobileLoginBtn"),
+          mUser = document.getElementById("mobileUserSection");
         if (user) {
-          // Logged In
-          if (deskAuth) deskAuth.style.display = "none";
-          if (deskUser) {
-            deskUser.style.display = "flex";
-            document.querySelector(".desktopUserName").innerText =
-              user.displayName.split(" ")[0];
-          }
-
-          if (mobLogin) mobLogin.style.display = "none";
-          if (mobUser) {
-            mobUser.style.display = "block";
-            mobUser.innerHTML = `
-                    <p style="color:var(--gold); margin-bottom:10px;">Hi, ${
+          dAuth.style.display = "none";
+          dUser.style.display = "flex";
+          document.querySelector(".desktopUserName").innerText =
+            user.displayName.split(" ")[0];
+          mLogin.style.display = "none";
+          mUser.style.display = "block";
+          mUser.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <p style="color:var(--gold); font-size:1.2rem; margin-bottom:5px;">Hi, ${
                       user.displayName.split(" ")[0]
                     }</p>
-                    <button onclick="logoutUser()" style="color:#ff4d4d; border:1px solid #ff4d4d; background:none; padding:8px 20px; border-radius:5px;">Logout</button>
-                `;
-          }
+                    <p style="color:#666; font-size:0.8rem;">${user.email}</p>
+                </div>
+                <button onclick="openEditProfile(); toggleMenu()" class="form-input" style="text-align:center; margin-bottom:10px; cursor:pointer; background:#222; border:1px solid #444;">✏️ Edit Profile</button>
+                <button onclick="logoutUser()" class="form-input" style="text-align:center; color:#ff4d4d; border:1px solid #ff4d4d; background:transparent; cursor:pointer;">Logout</button>
+            `;
         } else {
-          // Logged Out
-          if (deskAuth) deskAuth.style.display = "block";
-          if (deskUser) deskUser.style.display = "none";
-          if (mobLogin) mobLogin.style.display = "block";
-          if (mobUser) mobUser.style.display = "none";
+          dAuth.style.display = "block";
+          dUser.style.display = "none";
+          mLogin.style.display = "block";
+          mUser.style.display = "none";
         }
       });
 
-      // 5. Login Function
-      window.signInWithGoogle = function () {
+      window.signInWithGoogle = () => {
         auth
           .signInWithPopup(provider)
-          .then((result) => {
+          .then((res) => {
             closeModal("loginModal");
-            // Login success, check where to go
-            const mode = sessionStorage.getItem("analysisMode");
-            if (mode === "guest") {
+            if (sessionStorage.getItem("analysisMode") === "guest")
               window.location.href = "/dashboard?mode=guest";
-            } else {
-              checkUserProfile(result.user);
-            }
+            else checkUserProfile(res.user);
           })
-          .catch((error) => {
-            console.error(error);
-            alert("Login Failed: " + error.message);
-          });
+          .catch((e) => alert(e.message));
       };
-
       window.logoutUser = () =>
         auth.signOut().then(() => (window.location.href = "/"));
 
-      // 6. Action Handlers
+      // Actions
       window.handleMainAction = () => openModal("selectionModal");
-
       window.proceedAnalysis = (mode) => {
         closeModal("selectionModal");
         sessionStorage.setItem("analysisMode", mode);
-
         const user = auth.currentUser;
         if (user) {
           if (mode === "guest") window.location.href = "/dashboard?mode=guest";
           else checkUserProfile(user);
-        } else {
-          openModal("loginModal");
-        }
+        } else openModal("loginModal");
       };
 
+      // Profile Logic - THIS HANDLES FIRST TIME USER
       async function checkUserProfile(user) {
         try {
           const doc = await db.collection("users").doc(user.uid).get();
           if (doc.exists) {
+            // User already has profile -> Go to Dashboard
             window.location.href = "/dashboard";
           } else {
-            openModal("onboardingModal");
-            document.getElementById("userUid").value = user.uid;
-            document.getElementById("userEmail").value = user.email;
-            document.getElementById("userName").value = user.displayName;
+            // First time user -> Open Onboarding Form
+            openEditProfile(user);
           }
         } catch (e) {
           console.error(e);
         }
       }
 
+      window.openEditProfile = async (u = null) => {
+        const user = u || auth.currentUser;
+        if (!user) return;
+        openModal("onboardingModal");
+        document.getElementById("userUid").value = user.uid;
+        document.getElementById("userEmail").value = user.email;
+        if (!document.getElementById("userName").value)
+          document.getElementById("userName").value = user.displayName;
+
+        try {
+          const doc = await db.collection("users").doc(user.uid).get();
+          if (doc.exists) {
+            const d = doc.data().profile || doc.data();
+            document.getElementById("userName").value =
+              d.name || user.displayName;
+            document.getElementById("userDob").value = d.dob || "";
+            document.getElementById("userTime").value = d.tob || "";
+            document.getElementById("userPlace").value = d.place || "";
+          }
+        } catch (e) {}
+      };
+
       window.submitOnboarding = async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector("button");
+        const originalText = btn.innerText;
         btn.innerText = "Generating...";
-        const fd = new FormData(e.target);
         try {
           const res = await fetch("/api/save_user_data", {
             method: "POST",
-            body: fd,
+            body: new FormData(e.target),
           });
           const d = await res.json();
           if (d.status === "success") window.location.href = "/dashboard";
           else {
             alert(d.message);
-            btn.innerText = "Try Again";
+            btn.innerText = originalText;
           }
         } catch (err) {
           alert("Server Error");
-          btn.innerText = "Try Again";
+          btn.innerText = originalText;
         }
       };
 
-      // 7. Timer Logic
-      function startCountdown(duration, display) {
-        let timer = duration,
-          m,
-          s;
-        setInterval(() => {
-          m = parseInt(timer / 60, 10);
-          s = parseInt(timer % 60, 10);
-          m = m < 10 ? "0" + m : m;
-          s = s < 10 ? "0" + s : s;
-          display.textContent = m + ":" + s;
-          if (--timer < 0) timer = duration;
-        }, 1000);
+      // Visuals
+      const canvas = document.getElementById("constellation-canvas");
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let p = [];
+        class P {
+          constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = Math.random() * 0.5 - 0.25;
+            this.vy = Math.random() * 0.5 - 0.25;
+          }
+          u() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+            if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+          }
+          d() {
+            ctx.fillStyle = "#d4a373";
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, Math.random() * 2, 0, 7);
+            ctx.fill();
+          }
+        }
+        function init() {
+          p = [];
+          for (let i = 0; i < (canvas.width * canvas.height) / 9000; i++)
+            p.push(new P());
+        }
+        function anim() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          let g = ctx.createRadialGradient(
+            canvas.width / 2,
+            canvas.height / 2,
+            0,
+            canvas.width / 2,
+            canvas.height / 2,
+            canvas.width
+          );
+          g.addColorStop(0, "#064e3b");
+          g.addColorStop(1, "#022c22");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          p.forEach((e) => {
+            e.u();
+            e.d();
+          });
+          requestAnimationFrame(anim);
+        }
+        window.onresize = () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          init();
+        };
+        init();
+        anim();
       }
       window.onload = () => {
         const d = document.querySelector("#timer");
-        if (d) startCountdown(900, d);
+        if (d) {
+          let t = 900,
+            m,
+            s;
+          setInterval(() => {
+            m = parseInt(t / 60, 10);
+            s = parseInt(t % 60, 10);
+            d.textContent =
+              (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+            if (--t < 0) t = 900;
+          }, 1000);
+        }
       };
     </script>
   </body>
