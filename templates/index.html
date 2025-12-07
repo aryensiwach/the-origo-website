@@ -26,11 +26,32 @@
     <style>
       /* --- GLOBAL Z-INDEX FIXES --- */
       .main-header {
-        position: relative;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
         z-index: 100;
       }
+      .navbar {
+        position: relative;
+        z-index: 50;
+      }
+      .beta-bar {
+        position: relative;
+        z-index: 10;
+      }
 
-      /* FIXED: Z-index lowered so menu appears on top */
+      /* --- HERO POSITION FIX --- */
+      /* Isse content navbar ke just neeche start hoga */
+      .hero {
+        padding-top: 130px; /* Reduced from 160px to fit tight below navbar */
+      }
+      @media (max-width: 768px) {
+        .hero {
+          padding-top: 110px;
+        } /* Mobile ke liye aur adjust kiya */
+      }
+
       .modal {
         display: none;
         position: fixed;
@@ -55,13 +76,11 @@
         border-radius: 15px;
         border: 1px solid #333;
         width: 90%;
-        max-width: 400px; /* Slightly wider for better reading */
+        max-width: 400px;
         max-height: 90vh;
         overflow-y: auto;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
       }
-
-      /* Scrollbar styling for form */
       .form-content::-webkit-scrollbar {
         width: 5px;
       }
@@ -69,22 +88,18 @@
         background: #333;
         border-radius: 5px;
       }
-
-      /* FIXED: Increased margin for vertical spacing */
       .form-group {
         margin-bottom: 15px;
         text-align: left;
         width: 100%;
       }
-
       .form-label {
         display: block;
-        color: #bbb; /* Lighter color for better visibility */
+        color: #bbb;
         font-size: 0.85rem;
         margin-bottom: 8px;
         font-weight: 500;
       }
-
       .form-input {
         width: 100%;
         padding: 12px;
@@ -95,14 +110,12 @@
         font-size: 1rem;
         outline: none;
         transition: all 0.3s ease;
-        box-sizing: border-box; /* Ensures padding doesn't overflow width */
+        box-sizing: border-box;
       }
-
       .form-input:focus {
         border-color: var(--gold);
         background: #252525;
       }
-
       .btn-save {
         background: var(--gold);
         color: #000;
@@ -116,12 +129,73 @@
         margin-top: 10px;
         transition: transform 0.2s;
       }
-
       .btn-save:active {
         transform: scale(0.98);
       }
 
-      /* --- MOBILE NAVBAR FIX (High Z-Index) --- */
+      /* --- FOOTER STYLING --- */
+      .main-footer {
+        background: #050f0a;
+        padding: 60px 20px 20px;
+        border-top: 1px solid #1a1a1a;
+        margin-top: 50px;
+        position: relative;
+        z-index: 10;
+      }
+      .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .footer-col h4 {
+        color: var(--gold);
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+      }
+      .footer-col p {
+        color: #888;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+      .footer-col a {
+        display: block;
+        color: #888;
+        text-decoration: none;
+        margin-bottom: 10px;
+        transition: 0.3s;
+        font-size: 0.9rem;
+      }
+      .footer-col a:hover {
+        color: #fff;
+        padding-left: 5px;
+      }
+      .social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+      }
+      .social-links i {
+        color: #ccc;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .social-links i:hover {
+        color: var(--gold);
+        transform: translateY(-3px);
+      }
+      .footer-bottom {
+        text-align: center;
+        margin-top: 50px;
+        padding-top: 20px;
+        border-top: 1px solid #222;
+        color: #555;
+        font-size: 0.8rem;
+      }
+
+      /* --- MOBILE NAVBAR FIX --- */
       @media (max-width: 768px) {
         .nav-links {
           position: fixed;
@@ -136,7 +210,7 @@
           padding-top: 80px;
           gap: 20px;
           transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          z-index: 99999 !important; /* FIXED: Much higher than everything else */
+          z-index: 99999 !important;
           border-left: 1px solid #222;
           box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
         }
@@ -152,8 +226,6 @@
           color: #fff;
           cursor: pointer;
         }
-
-        /* Mobile Specific Input Adjustments */
         .form-content {
           padding: 20px;
           width: 95%;
@@ -161,7 +233,16 @@
         .form-input {
           padding: 14px;
           font-size: 16px;
-        } /* Prevent zoom on iOS */
+        }
+        .footer-grid {
+          text-align: center;
+        }
+        .footer-col a:hover {
+          padding-left: 0;
+        }
+        .social-links {
+          justify-content: center;
+        }
       }
     </style>
   </head>
@@ -308,15 +389,92 @@
       <h2 class="section-title">Frequently Asked Questions</h2>
       <div class="faq-grid">
         <div class="faq-item">
-          <h3><i class="fa-solid fa-bolt"></i> Is it instant?</h3>
-          <p>Yes! Our AI engine calculates instantly.</p>
+          <h3><i class="fa-solid fa-bolt"></i> Is it really instant?</h3>
+          <p>
+            Yes! Unlike human astrologers who take days, our AI engine
+            calculates your Kundli and predictions instantly.
+          </p>
         </div>
         <div class="faq-item">
           <h3><i class="fa-solid fa-lock"></i> Is my data safe?</h3>
-          <p>100% Safe. Deleted in 24 hours.</p>
+          <p>
+            100% Safe. We don't sell data. Your birth details are used only for
+            calculation and deleted upon request.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3><i class="fa-solid fa-scroll"></i> Is this Vedic or Western?</h3>
+          <p>
+            We use pure <strong>Vedic Astrology (Parashara)</strong>, which is
+            considered the most accurate system for predictions.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3>
+            <i class="fa-solid fa-robot"></i> Can I ask follow-up questions?
+          </h3>
+          <p>
+            Absolutely. After the initial report, you can chat with the AI
+            Astrologer to clear any specific doubts.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3>
+            <i class="fa-solid fa-clock"></i> What if I don't know my time?
+          </h3>
+          <p>
+            For best results, accurate time is needed. However, you can use our
+            "Prashna Kundli" feature (Coming Soon) if time is unknown.
+          </p>
         </div>
       </div>
     </section>
+
+    <footer class="main-footer">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="logo-container" style="margin-bottom: 15px">
+            <img
+              src="{{ url_for('static', filename='logo.png') }}"
+              alt="Logo"
+              style="height: 30px"
+            />
+            <span class="brand-name" style="font-size: 1.2rem">The Origo</span>
+          </div>
+          <p>
+            Merging ancient Vedic wisdom with modern AI to help you navigate
+            life's journey with clarity and confidence.
+          </p>
+          <div class="social-links">
+            <i class="fa-brands fa-instagram"></i>
+            <i class="fa-brands fa-twitter"></i>
+            <i class="fa-brands fa-youtube"></i>
+            <i class="fa-brands fa-linkedin"></i>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <a href="#">Home</a>
+          <a href="{{ url_for('soulmate') }}">Soulmate Match</a>
+          <a href="#features">How it Works</a>
+          <a href="#faq">FAQs</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Refund Policy</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; 2025 The Origo AI. All Rights Reserved. Made with ❤️ in India.
+        </p>
+      </div>
+    </footer>
 
     <div id="selectionModal" class="modal">
       <div class="form-content" style="text-align: center">
@@ -573,15 +731,13 @@
         } else openModal("loginModal");
       };
 
-      // Profile Logic - THIS HANDLES FIRST TIME USER
+      // Profile Logic
       async function checkUserProfile(user) {
         try {
           const doc = await db.collection("users").doc(user.uid).get();
           if (doc.exists) {
-            // User already has profile -> Go to Dashboard
             window.location.href = "/dashboard";
           } else {
-            // First time user -> Open Onboarding Form
             openEditProfile(user);
           }
         } catch (e) {
