@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Your Soulmate | The Origo</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header style="padding: 20px; text-align: center">
+      <a
+        href="{{ url_for('home') }}"
+        style="color: var(--gold); text-decoration: none; font-size: 1.2rem"
+      >
+        <i class="fa-solid fa-arrow-left"></i> Back to Home
+      </a>
+    </header>
+
+    <div
+      style="
+        height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+      "
+    >
+      <h1 style="font-size: 2.5rem; color: var(--gold)">Soulmate Finder</h1>
+      <p>Still in Beta</p>
+    </div>
+  </body>
+</html>

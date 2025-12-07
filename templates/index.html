@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="The Origo - Decode your past life soulmate and karmic debts using the most powerful AI Vedic Astrology engine."
+    />
+    <title>The Origo | Decode Your Destiny</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <canvas id="constellation-canvas"></canvas>
+
+    <header class="main-header">
+      <nav class="navbar">
+        <div class="logo-container">
+          <img
+            src="{{ url_for('static', filename='logo.png') }}"
+            alt="The Origo Logo"
+            class="main-logo"
+          />
+          <span class="brand-name">The Origo</span>
+        </div>
+
+        <div class="nav-links" id="navLinks">
+          <i class="fa-solid fa-xmark close-menu" id="closeMenuBtn"></i>
+          <a href="#">Home</a>
+          <a
+            href="{{ url_for('soulmate') }}"
+            style="color: #ff6b6b; font-weight: 600"
+            >Find Soulmate
+          </a>
+          <a href="#features">Process</a>
+          <a href="#faq">FAQs</a>
+
+          <a
+            href="#"
+            onclick="openLoginModal()"
+            class="btn-login-mobile trigger-join"
+            id="mobileLoginBtn"
+            >Login</a
+          >
+
+          <div
+            id="mobileUserSection"
+            style="display: none; width: 100%; text-align: center"
+          ></div>
+        </div>
+
+        <div class="nav-right">
+          <div id="desktopAuthBtns">
+            <a
+              href="#"
+              onclick="openLoginModal()"
+              class="btn-login-desktop trigger-join"
+              id="desktopLoginBtn"
+            >
+              Login <i class="fa-solid fa-right-to-bracket"></i>
+            </a>
+          </div>
+
+          <div
+            id="desktopUserSection"
+            style="display: none; align-items: center; gap: 15px"
+          >
+            <span style="color: #fff; font-size: 0.9rem"
+              >Namaste,
+              <span
+                class="desktopUserName"
+                style="
+                  color: var(--gold);
+                  font-weight: bold;
+                  text-transform: capitalize;
+                "
+                >User</span
+              >
+              <i
+                class="fa-solid fa-pen-to-square"
+                onclick="openEditProfile()"
+                style="
+                  cursor: pointer;
+                  margin-left: 5px;
+                  color: #aaa;
+                  transition: 0.3s;
+                "
+                onmouseover="this.style.color='var(--gold)'"
+                onmouseout="this.style.color='#aaa'"
+                title="Edit Profile"
+              ></i>
+            </span>
+
+            <button
+              onclick="logoutUser()"
+              class="btn-login-desktop"
+              style="
+                background: transparent;
+                border: 1px solid var(--gold);
+                color: var(--gold);
+                cursor: pointer;
+                padding: 5px 15px;
+              "
+            >
+              Logout <i class="fa-solid fa-power-off"></i>
+            </button>
+          </div>
+
+          <i class="fa-solid fa-bars hamburger" id="hamburgerBtn"></i>
+        </div>
+      </nav>
+
+      <div class="beta-bar">
+        <p>
+          <i class="fa-solid fa-fire-flame-curved blink"></i>
+          BETA LAUNCH OFFER: Full Analysis is <span class="strike">₹200</span>
+          <span class="free-tag">FREE</span> for next
+          <span id="timer">15:00</span> Minutes!
+        </p>
+      </div>
+    </header>
+
+    <div class="hero">
+      <h1>
+        Decode Your Destiny with <br />
+        <span class="text-gold">Most Powerful AI Astrology</span>
+      </h1>
+
+      <p class="hero-sub">
+        A fusion of <strong>Real Astrologers & AI</strong>. 100% Calculation
+        Accuracy for D-1 to D-60 Charts. Find your
+        <strong>Past Life Soulmate</strong>.
+      </p>
+
+      <div class="hero-highlights">
+        <div class="highlight-box">
+          <i class="fa-solid fa-bullseye"></i> 95% Accurate Predictions
+        </div>
+        <div class="highlight-box">
+          <i class="fa-solid fa-heart"></i> Know Your Soulmate & Life Purpose
+        </div>
+      </div>
+
+      <div class="cta-group">
+        <button type="button" class="btn-reveal" onclick="handleMainAction()">
+          Reveal My Truth <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <p class="privacy-text">Instant Analysis • 100% Private</p>
+
+      <div class="app-launch-section">
+        <p>App Launching Soon on</p>
+        <div class="store-badges">
+          <div class="store-btn">
+            <i class="fa-brands fa-apple"></i>
+            <div>
+              <span class="small-text">Download on the</span
+              ><span class="big-text">App Store</span>
+            </div>
+          </div>
+          <div class="store-btn">
+            <i class="fa-brands fa-google-play"></i>
+            <div>
+              <span class="small-text">GET IT ON</span
+              ><span class="big-text">Google Play</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="features" class="section-features">
+      <h2 class="section-title">How It Works</h2>
+      <div class="grid-features">
+        <div class="feature-item">
+          <i class="fa-solid fa-file-signature icon-3d"></i>
+          <h3>1. Accurate Data</h3>
+          <p>
+            We take exact Date & Time. Then, a
+            <strong>Real Astrologer</strong> + Detailed AI Analysis is
+            performed.
+          </p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-brain-circuit icon-3d"></i>
+          <h3>2. Deep Scanning</h3>
+          <p>
+            Our engine scans <strong>5,000+ Vedic Rules</strong> (D-60 & Dashas)
+            to find hidden patterns.
+          </p>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-comments icon-3d"></i>
+          <h3>3. Chat with Astrologer</h3>
+          <p>
+            Get instant access to your <strong>AI Dashboard</strong> and ask
+            unlimited questions about your future.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="section-faq">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h3><i class="fa-solid fa-bolt"></i> Is it instant?</h3>
+          <p>
+            Yes! Unlike traditional astrologers who take days, our AI engine
+            calculates your D-60 charts instantly.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3><i class="fa-solid fa-lock"></i> Is my data safe?</h3>
+          <p>
+            100% Safe. We use encryption. Your birth details are used *only* for
+            calculation.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3><i class="fa-solid fa-tag"></i> Why is this free?</h3>
+          <p>
+            The Origo is currently in <strong>Public Beta</strong>. Offering
+            this premium analysis for FREE to early users.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3><i class="fa-solid fa-infinity"></i> What can I ask?</h3>
+          <p>
+            Ask anything related to Career, Marriage, Wealth, or Past Life. The
+            AI answers based on your unique planetary positions.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="main-footer">
+      <div class="footer-content">
+        <div class="footer-col brand-col">
+          <div class="footer-logo">
+            <i class="fa-solid fa-star-of-life"></i> The Origo
+          </div>
+          <p>Most accurate AI Vedic Astrology engine.</p>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2025 The Origo AI.</p></div>
+    </footer>
+
+    <div id="selectionModal" class="modal">
+      <div class="modal-content" style="text-align: center; max-width: 420px">
+        <span class="close-btn" onclick="closeModal('selectionModal')"
+          >&times;</span
+        >
+        <div class="modal-header">
+          <h2>Whose Future?</h2>
+          <p>Select whose chart you want to decode.</p>
+        </div>
+        <div
+          style="
+            margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+          "
+        >
+          <button
+            onclick="proceedAnalysis('self')"
+            class="btn-submit"
+            style="
+              background: var(--gold);
+              color: #000;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 10px;
+            "
+          >
+            <i class="fa-solid fa-user"></i> My Chart Analysis
+          </button>
+          <button
+            onclick="proceedAnalysis('guest')"
+            class="btn-submit"
+            style="
+              background: transparent;
+              border: 1px solid var(--gold);
+              color: var(--gold);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 10px;
+            "
+          >
+            <i class="fa-solid fa-user-group"></i> Analyze Someone Else
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+      <div class="modal-content" style="text-align: center; max-width: 400px">
+        <span class="close-btn" onclick="closeModal('loginModal')"
+          >&times;</span
+        >
+        <div class="modal-header">
+          <h2>Welcome Seeker ✨</h2>
+          <p>Login to securely save your Charts.</p>
+        </div>
+        <div style="margin: 30px 0">
+          <button
+            id="googleLoginBtn"
+            class="btn-submit"
+            style="
+              background: white;
+              color: #333;
+              border: 1px solid #ddd;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 10px;
+            "
+          >
+            <i class="fa-brands fa-google" style="color: #db4437"></i> Continue
+            with Google
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="onboardingModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('onboardingModal')"
+          >&times;</span
+        >
+        <div class="modal-header">
+          <h2>Setup Your Profile 🔮</h2>
+          <p>Enter accurate Birth Details for D1-D60</p>
+        </div>
+        <form id="onboardingForm" onsubmit="submitOnboarding(event)">
+          <input type="hidden" id="userUid" name="uid" />
+          <input type="hidden" id="userEmail" name="email" />
+          <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="userName" name="name" required />
+          </div>
+          <div class="row-inputs">
+            <div class="input-group">
+              <label>Date of Birth</label>
+              <input type="date" name="dob" required />
+            </div>
+            <div class="input-group">
+              <label>Time of Birth</label>
+              <input type="time" name="time" required />
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Place of Birth (City)</label>
+            <input
+              type="text"
+              name="place"
+              placeholder="e.g. Mumbai"
+              required
+            />
+          </div>
+          <div class="row-inputs">
+            <div class="input-group">
+              <label>Gender</label>
+              <select name="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Status</label>
+              <select name="status">
+                <option value="single">Single</option>
+                <option value="relationship">In Relationship</option>
+                <option value="married">Married</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit">Generate My Charts</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="editProfileModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('editProfileModal')"
+          >&times;</span
+        >
+        <div class="modal-header">
+          <h2>Edit Profile ✏️</h2>
+          <p>Update your birth details</p>
+        </div>
+        <form id="editProfileForm" onsubmit="updateProfile(event)">
+          <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="editName" name="name" required />
+          </div>
+          <div class="row-inputs">
+            <div class="input-group">
+              <label>Date of Birth</label>
+              <input type="date" id="editDob" name="dob" required />
+            </div>
+            <div class="input-group">
+              <label>Time of Birth</label>
+              <input type="time" id="editTime" name="time" required />
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Place of Birth (City)</label>
+            <input type="text" id="editPlace" name="place" required />
+          </div>
+          <div class="row-inputs">
+            <div class="input-group">
+              <label>Gender</label>
+              <select id="editGender" name="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Status</label>
+              <select id="editStatus" name="status">
+                <option value="single">Single</option>
+                <option value="relationship">In Relationship</option>
+                <option value="married">Married</option>
+              </select>
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="btn-submit"
+            style="background: var(--gold); color: #000"
+          >
+            Update Details
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script
+      src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+      // ... Baki saare purane functions (Selection Modal, Login, etc.) ...
+
+      // 👇 YAHAN PASTE KAR NAYA CODE 👇
+      function startCountdown(duration, display) {
+        let timer = duration,
+          minutes,
+          seconds;
+        setInterval(function () {
+          minutes = parseInt(timer / 60, 10);
+          seconds = parseInt(timer % 60, 10);
+
+          minutes = minutes < 10 ? "0" + minutes : minutes;
+          seconds = seconds < 10 ? "0" + seconds : seconds;
+
+          display.textContent = minutes + ":" + seconds;
+
+          if (--timer < 0) {
+            timer = duration;
+          }
+        }, 1000);
+      }
+
+      window.addEventListener("load", function () {
+        const fifteenMinutes = 60 * 15;
+        const display = document.querySelector("#timer");
+        if (display) startCountdown(fifteenMinutes, display);
+      });
+      // 👆 YAHAN KHATAM 👆
+    </script>
+  </body>
+</html>

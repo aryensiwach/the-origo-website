@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Chat with Origo</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+      /* --- RESET & BASE --- */
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        background-color: #0d0d0d;
+        font-family: "Roboto", sans-serif;
+        color: #ececec;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      /* --- NAVBAR --- */
+      .dash-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 55px;
+        background: rgba(13, 13, 13, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #222;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
+        z-index: 100;
+      }
+      .brand-title {
+        color: var(--gold);
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+        letter-spacing: 1px;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .menu-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.4rem;
+        cursor: pointer;
+        padding: 5px;
+        margin-right: 10px;
+      }
+      .points-badge {
+        font-size: 0.8rem;
+        background: #1a1a1a;
+        padding: 4px 10px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #d4a373;
+        font-family: "Poppins", sans-serif;
+      }
+
+      /* --- COSMIC STRIP (DESKTOP) --- */
+      .planet-strip {
+        position: fixed;
+        top: 55px;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background: #0a0a0a;
+        border-bottom: 1px solid #222;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 15px;
+        z-index: 90;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+      }
+      .planet-strip::-webkit-scrollbar {
+        display: none;
+      }
+      .summary-item {
+        background: #151515;
+        border: 1px solid #333;
+        padding: 5px 12px;
+        border-radius: 6px;
+        margin-right: 10px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 80px;
+        height: 45px;
+        flex-shrink: 0;
+      }
+      .summary-item span.house {
+        color: #d4a373;
+        font-weight: 600;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        font-family: "Poppins", sans-serif;
+      }
+      .summary-item span.planets {
+        color: #fff;
+        font-weight: 500;
+        font-size: 0.85rem;
+      }
+
+      .context-badge {
+        background: #222;
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        border: 1px solid var(--gold);
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* --- LAYOUT & SIDEBAR (FIXED) --- */
+      .chat-container {
+        display: flex;
+        height: 100vh;
+        padding-top: 115px;
+        position: relative;
+      }
+
+      .sidebar {
+        width: 260px;
+        background: #0d0d0d;
+        border-right: 1px solid #222;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        gap: 15px;
+        position: absolute;
+        top: 115px;
+        bottom: 0;
+        left: -260px; /* Fully Hidden */
+        transition: transform 0.3s ease;
+        z-index: 150;
+        overflow-y: auto;
+      }
+      .sidebar.active {
+        transform: translateX(260px); /* Exact match to width */
+      }
+
+      @media (min-width: 769px) {
+        .sidebar {
+          position: relative;
+          left: 0;
+          top: 0;
+          height: 100%;
+          transform: none;
+          box-shadow: none;
+        }
+        .menu-btn {
+          display: none;
+        }
+        .chart-toggle-btn {
+          display: none !important;
+        }
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          top: 0;
+          bottom: 0;
+          width: 80%;
+          max-width: 300px;
+          transform: translateX(-100%);
+          z-index: 250;
+          padding-top: 60px;
+          left: 0;
+        }
+        .sidebar.active {
+          transform: translateX(0);
+        } /* Simple slide in */
+        .planet-strip {
+          display: none !important;
+        }
+        .chart-toggle-btn {
+          display: flex !important;
+        }
+        .chat-container {
+          padding-top: 55px;
+        }
+        .brand-title span {
+          display: none;
+        }
+        .chip {
+          margin-right: 40px;
+        }
+        .msg-row.user {
+          font-size: 0.7rem;
+        }
+      }
+
+      /* --- CHAT STYLING --- */
+      .chat-area {
+        flex: 1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
+      }
+      .messages-box {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        padding-bottom: 140px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        scroll-behavior: smooth;
+      }
+
+      .msg-row {
+        display: flex;
+        gap: 15px;
+        max-width: 850px;
+        margin: 0 auto;
+        width: 100%;
+        animation: fadeIn 0.3s ease;
+      }
+      .msg-row.user {
+        justify-content: flex-end;
+      }
+
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        background: #1f1f1f;
+        border: 1px solid #333;
+      }
+      .avatar.ai {
+        color: #d4a373;
+        border-color: var(--gold);
+        box-shadow: 0 0 10px rgba(212, 163, 115, 0.2);
+      }
+      .avatar.user {
+        background: #333;
+        color: #fff;
+      }
+
+      /* --- AI MESSAGE BUBBLE STYLING --- */
+      /* --- FIXED AI MESSAGE STYLING --- */
+      .msg-content {
+        background: transparent;
+        color: #e0e0e0;
+        line-height: 1.6;
+        font-size: 1rem;
+        width: 100%; /* Fix width */
+        max-width: 100%; /* Prevent overflow */
+        font-weight: 400;
+        text-align: left;
+        font-family: "Roboto", sans-serif;
+
+        /* IMPORTANT: Ye text ko screen ke andar rakhega */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+      }
+
+      /* User Bubble Styling */
+      .msg-row.user .msg-content {
+        background: #2a2a2a;
+        padding: 10px 15px;
+        border-radius: 12px 12px 0 12px;
+        color: #fff;
+        border: 1px solid #444;
+        font-size: 0.95rem;
+      }
+
+      /* --- MARKDOWN ELEMENTS (FIXED SPACING) --- */
+
+      /* Headings (Section 1, 2 etc) */
+      .msg-content h3 {
+        color: var(--gold);
+        margin: 20px 0 10px 0;
+        font-family: "Poppins", sans-serif;
+        font-size: 1.1rem;
+        border-left: 3px solid var(--gold);
+        padding-left: 10px; /* Thoda gap border se */
+        line-height: 1.4;
+      }
+
+      /* Bold Text */
+      .msg-content strong {
+        color: #e6c2a1; /* Thoda light gold */
+        font-weight: 600;
+      }
+
+      /* Paragraphs */
+      .msg-content p {
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      /* Lists (Bullet Points - FIXED INDENTATION) */
+      .msg-content ul,
+      .msg-content ol {
+        margin: 5px 0 15px 0; /* Left margin hata diya */
+        padding-left: 20px; /* Standard padding */
+      }
+
+      .msg-content li {
+        margin-bottom: 6px;
+        color: #ddd;
+        padding-left: 0; /* Extra padding hatayi */
+        line-height: 1.5;
+      }
+
+      /* Tables */
+      .msg-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        font-size: 0.85rem;
+        border: 1px solid #333;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .msg-content th {
+        background: rgba(212, 163, 115, 0.15);
+        color: var(--gold);
+        font-weight: 600;
+        padding: 8px 10px;
+        text-align: left;
+        border-bottom: 1px solid #444;
+      }
+      .msg-content td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #222;
+        color: #ccc;
+      }
+
+      /* Separator */
+      .msg-content hr {
+        border: 0;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 20px 0;
+      }
+
+      /* --- MOBILE SPECIFIC FIXES --- */
+      @media (max-width: 768px) {
+        .msg-row {
+          gap: 10px;
+          max-width: 100%;
+          padding-right: 5px; /* Right side gap taaki chipke na */
+        }
+
+        .msg-content {
+          font-size: 0.6rem; /* Readable size */
+          line-height: 1.5;
+        }
+
+        .msg-content h3 {
+          font-size: 1rem;
+          margin-top: 15px;
+          border-left-width: 2px; /* Patla border mobile ke liye */
+          padding-left: 8px;
+        }
+
+        /* Mobile Table Scroll Fix */
+        .msg-content table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+      }
+
+      /* Follow-up Chips */
+      .followup-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        margin-left: 53px;
+      }
+      .chip {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid #444;
+
+        /* 👇 YAHAN SE SIZE CONTROL HOGA */
+        padding: 6px 12px; /* Box ka size yahan se kam kr */
+        font-size: 0.7rem; /* Text ka size yahan se kam kr */
+        /* 👆 */
+
+        border-radius: 20px;
+        color: #ccc;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .chip:hover {
+        background: rgba(212, 163, 115, 0.15);
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+
+      /* INPUT */
+      .input-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        background: #0d0d0d;
+        border-top: 1px solid #222;
+        display: flex;
+        justify-content: center;
+        z-index: 50;
+      }
+
+      .input-box {
+        width: 100%;
+        max-width: 850px;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 20px;
+        padding: 10px 15px; /* Padding adjust ki */
+        display: flex;
+        align-items: flex-end; /* Button ko bottom mein rakhne ke liye */
+        gap: 10px;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+      }
+
+      textarea.chat-input {
+        background: transparent;
+        border: none;
+        color: white;
+        width: 100%;
+        resize: none; /* Manual resize band */
+        font-size: 0.78em;
+        line-height: 1.5;
+        max-height: 120px; /* Isse zyada lamba nahi hoga */
+        height: 40px; /* Default height */
+        outline: none;
+        font-family: sans-serif;
+        overflow-y: hidden; /* Scrollbar chupao jab tak jarurat na ho */
+      }
+
+      /* --- SUGGESTIONS (CHIPS) SHORT KARNE KE LIYE --- */
+
+      .btn-send {
+        background: var(--gold);
+        color: #000;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: transform 0.2s;
+      }
+      .btn-send:active {
+        transform: scale(0.9);
+      }
+
+      /* GUEST FORM (VERTICAL) */
+      .guest-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 350px;
+        background: #151515;
+        border: 1px solid #333;
+        border-radius: 16px;
+        padding: 25px;
+        z-index: 500;
+        display: none;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+      }
+      .g-input {
+        width: 100%;
+        background: #222;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 14px;
+        margin-bottom: 12px;
+        border-radius: 8px;
+        outline: none;
+        font-size: 1rem;
+        font-family: "Roboto", sans-serif;
+      }
+      .btn-submit-guest {
+        width: 100%;
+        background: var(--gold);
+        color: #000;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 5px;
+        font-size: 1rem;
+        font-family: "Poppins", sans-serif;
+      }
+      .btn-close-guest {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      /* SETTINGS */
+      .length-selector {
+        display: flex;
+        background: #151515;
+        border: 1px solid #333;
+        border-radius: 6px;
+        margin-bottom: 20px;
+      }
+      .len-option {
+        flex: 1;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 0.8rem;
+        cursor: pointer;
+        color: #888;
+        border-radius: 4px;
+        transition: 0.2s;
+        font-family: "Poppins", sans-serif;
+      }
+      .len-option.active {
+        background: var(--gold);
+        color: #000;
+        font-weight: 600;
+      }
+
+      /* RIGHT DRAWER - MOBILE LIST (Fixed) */
+      .chart-drawer {
+        position: fixed;
+        top: 55px;
+        right: -350px;
+        bottom: 0;
+        width: 85%;
+        max-width: 300px;
+        background: #0d0d0d;
+        border-left: 1px solid #222;
+        z-index: 200;
+        padding: 20px;
+        overflow-y: auto;
+        transition: right 0.3s ease;
+      }
+      .chart-drawer.open {
+        right: 0;
+      }
+
+      .mob-house-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #151515;
+        border: 1px solid #333;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+      }
+      .mob-house-row span:first-child {
+        color: var(--gold);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .mob-house-row span:last-child {
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 180;
+        display: none;
+        backdrop-filter: blur(3px);
+      }
+      .overlay.active {
+        display: block;
+      }
+
+      .typing-indicator span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: #888;
+        border-radius: 50%;
+        margin: 0 2px;
+        animation: bounce 1.4s infinite;
+      }
+      .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
+
+    <header class="dash-nav">
+      <div class="nav-left">
+        <button class="menu-btn" onclick="toggleLeftSidebar()">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+      <div class="nav-right">
+        <div id="chartContextBadge" class="context-badge">MY CHART</div>
+        <div class="points-badge">
+          <i class="fa-solid fa-coins"></i> <span id="creditDisplay">..</span>
+        </div>
+        <button
+          class="chart-toggle-btn"
+          onclick="toggleRightDrawer()"
+          style="
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.3rem;
+          "
+        >
+          <i class="fa-solid fa-list-ul"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="planet-strip">
+      <div class="chart-summary" id="d1Summary"><span>Loading...</span></div>
+    </div>
+
+    <div id="guestModal" class="guest-modal">
+      <button class="btn-close-guest" onclick="toggleGuestModal(false)">
+        &times;
+      </button>
+      <h3 style="color: var(--gold); margin: 0 0 5px 0">Analyze Profile</h3>
+      <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px">
+        Enter details for prediction (Cost: 5 Pts)
+      </p>
+      <form onsubmit="analyzeGuest(event)">
+        <input
+          type="text"
+          id="gName"
+          class="g-input"
+          placeholder="Full Name"
+          required
+        />
+        <input type="date" id="gDob" class="g-input" required />
+        <input type="time" id="gTime" class="g-input" required />
+        <input
+          type="text"
+          id="gPlace"
+          class="g-input"
+          placeholder="City of Birth"
+          required
+        />
+        <select id="gGender" class="g-input">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <button type="submit" class="btn-submit-guest">Create & Analyze</button>
+      </form>
+    </div>
+
+    <div class="chat-container">
+      <aside class="sidebar" id="leftSidebar">
+        <div
+          style="
+            color: #666;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+          "
+        >
+          Settings
+        </div>
+        <select
+          id="langSelector"
+          class="g-input"
+          style="padding: 10px; margin-bottom: 15px"
+        >
+          <option value="Hinglish">Hinglish (Roman)</option>
+          <option value="Hindi">Hindi (Devanagari)</option>
+          <option value="English">English</option>
+        </select>
+
+        <div
+          style="
+            color: #666;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+          "
+        >
+          Depth
+        </div>
+        <div class="length-selector">
+          <div class="len-option active" onclick="setLength(this, 'short')">
+            Short
+          </div>
+          <div class="len-option" onclick="setLength(this, 'moderate')">
+            Medium
+          </div>
+          <div class="len-option" onclick="setLength(this, 'detailed')">
+            Deep (2x)
+          </div>
+        </div>
+
+        <div
+          style="
+            color: #666;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+          "
+        >
+          Reports
+        </div>
+        <button class="chart-btn" onclick="triggerChartAnalysis('D1')">
+          Personality (D1)
+        </button>
+        <button class="chart-btn" onclick="triggerChartAnalysis('D2')">
+          Wealth (D2)
+        </button>
+        <button class="chart-btn" onclick="triggerChartAnalysis('D9')">
+          Marriage (D9)
+        </button>
+        <button class="chart-btn" onclick="triggerChartAnalysis('D10')">
+          Career (D10)
+        </button>
+        <button class="chart-btn" onclick="triggerChartAnalysis('D24')">
+          Education (D24)
+        </button>
+        <button class="chart-btn" onclick="triggerChartAnalysis('D60')">
+          Past Life (D60)
+        </button>
+
+        <button
+          onclick="revertToSelf()"
+          id="btnBackToSelf"
+          style="
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: 1px solid #ff4d6d;
+            color: #ff4d6d;
+            border-radius: 8px;
+            cursor: pointer;
+          "
+        >
+          Back to My Chart
+        </button>
+        <button
+          onclick="logoutUser()"
+          style="
+            margin-top: auto;
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: 1px solid #333;
+            color: #aaa;
+            border-radius: 8px;
+            cursor: pointer;
+          "
+        >
+          Logout
+        </button>
+      </aside>
+
+      <main
+        class="chat-area"
+        onclick="if(window.innerWidth < 768) closeDrawers()"
+      >
+        <div class="messages-box" id="chatWindow">
+          <div class="msg-row ai">
+            <div class="avatar ai"><i class="fa-solid fa-robot"></i></div>
+            <div class="msg-content">
+              <strong>Namaste! I am Origo.</strong><br />
+              I have analyzed the charts. Ask me anything about Career, Marriage
+              or Past Life.
+            </div>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <div class="input-box">
+            <textarea
+              id="userQuery"
+              class="chat-input"
+              placeholder="Ask about your future..."
+              rows="1"
+              onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage();}"
+            ></textarea>
+            <button class="btn-send" onclick="sendMessage()">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <aside class="chart-drawer" id="rightDrawer">
+      <h3
+        style="
+          color: var(--gold);
+          border-bottom: 1px solid #333;
+          padding-bottom: 10px;
+          margin-bottom: 15px;
+          font-family: 'Poppins', sans-serif;
+        "
+      >
+        Planetary Positions
+      </h3>
+      <div id="mobilePlanetList"></div>
+    </aside>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCe0mBaCP3DpFGZ7-GKTlEQ9L8wCNXZ9kI",
+        authDomain: "internhub-c469b.firebaseapp.com",
+        projectId: "internhub-c469b",
+        storageBucket: "internhub-c469b.firebasestorage.app",
+        messagingSenderId: "332430290715",
+        appId: "1:332430290715:web:d4c7725ebe94785d156dbe",
+      };
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      let currentUser = null,
+        activeUid = null,
+        currentData = null,
+        responseLength = "short";
+
+      // --- AUTH & INIT ---
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          currentUser = user;
+          activeUid = user.uid;
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get("mode") === "guest") {
+            toggleGuestModal(true);
+            await loadUserData(user.uid);
+          } else {
+            await loadUserData(user.uid);
+            updateUIForUser("MY CHART", false);
+          }
+
+          db.collection("users")
+            .doc(user.uid)
+            .onSnapshot((doc) => {
+              if (doc.exists)
+                document.getElementById("creditDisplay").innerText =
+                  doc.data().profile.credits || 0;
+            });
+        } else {
+          window.location.href = "/";
+        }
+      });
+
+      window.setLength = function (el, val) {
+        document.querySelectorAll(".len-option").forEach((e) => {
+          e.classList.remove("active");
+        });
+        el.classList.add("active");
+        responseLength = val;
+      };
+
+      async function loadUserData(uid) {
+        try {
+          const doc = await db.collection("users").doc(uid).get();
+          if (doc.exists) {
+            currentData = doc.data();
+            renderCharts(currentData);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      function updateUIForUser(label, isGuest) {
+        const badge = document.getElementById("chartContextBadge");
+        badge.innerText = label;
+        badge.style.borderColor = isGuest ? "#ff4d6d" : "var(--gold)";
+        badge.style.color = isGuest ? "#ff4d6d" : "#fff";
+        document.getElementById("btnBackToSelf").style.display = isGuest
+          ? "block"
+          : "none";
+      }
+
+      // --- VISUALIZATION ---
+      function renderCharts(data) {
+        if (!data || !data.charts || !data.charts.D1) return;
+        const d1 = data.charts.D1;
+        const strip = document.getElementById("d1Summary");
+        let html = "";
+
+        const ascSign = d1["Asc"] || d1["Ascendant"];
+        let houses = {};
+        for (let i = 1; i <= 12; i++) houses[i] = [];
+
+        for (const [planet, sign] of Object.entries(d1)) {
+          if (planet === "Asc" || planet === "Ascendant") continue;
+          let diff = sign - ascSign;
+          if (diff < 0) diff += 12;
+          houses[diff + 1].push(planet.substring(0, 3));
+        }
+
+        // 1. Desktop Horizontal Strip
+        for (let i = 1; i <= 12; i++) {
+          if (houses[i].length > 0) {
+            html += `<div class="summary-item"><span class="house">${getOrdinal(
+              i
+            )} HOUSE</span><span class="planets">${houses[i].join(
+              "/"
+            )}</span></div>`;
+          }
+        }
+        strip.innerHTML = html;
+
+        // 2. Mobile Vertical List (New Logic)
+        renderMobileList(houses);
+      }
+      function getOrdinal(n) {
+        const s = ["th", "st", "nd", "rd"];
+        const v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      }
+
+      function renderMobileList(houses) {
+        const listContainer = document.getElementById("mobilePlanetList");
+        listContainer.innerHTML = ""; // Clear
+
+        for (let i = 1; i <= 12; i++) {
+          // Only show occupied houses
+          if (houses[i].length > 0) {
+            const row = document.createElement("div");
+            row.className = "mob-house-row";
+            row.innerHTML = `<span>${getOrdinal(i)} House</span> <span>${houses[
+              i
+            ].join(", ")}</span>`;
+            listContainer.appendChild(row);
+          }
+        }
+
+        // Handle empty chart case
+        if (listContainer.innerHTML === "") {
+          listContainer.innerHTML =
+            "<p style='color:#666;text-align:center;'>No planets found.</p>";
+        }
+      }
+
+      // --- LOGIC: CHAT & COST ---
+      async function sendMessage(text = null) {
+        const input = document.getElementById("userQuery");
+        const query = text || input.value.trim();
+        if (!query) return;
+
+        addMessageToChat(query, "user");
+        input.value = "";
+        await callAI(query, "D1");
+      }
+
+      async function triggerChartAnalysis(chartType) {
+        if (window.innerWidth < 768) closeDrawers();
+
+        const library = {
+          D1: "Analyze D1 (Lagna Chart). Core personality.",
+          D2: "Analyze D2 (Hora Chart). Wealth and D1 Combined.",
+          D9: "Analyze D9 (Navamsha). Marriage and D1 combined",
+          D10: "Analyze D10 (Dashamsha). Career and D1 combined",
+          D24: "Analyze D24 (Chaturvimshamsha). Education and D1 combined",
+          D60: "Analyze D60 (Shashtyamsha). Past Life and D1 combined",
+        };
+
+        const msg = library[chartType] || `Analyze my ${chartType} chart.`;
+        addMessageToChat(msg, "user");
+        await callAI(msg, chartType);
+      }
+
+      async function callAI(message, chartType) {
+        const sendBtn = document.querySelector(".btn-send");
+        sendBtn.style.opacity = "0.5";
+        sendBtn.disabled = true;
+
+        const loadId = "load_" + Date.now();
+        const chatWin = document.getElementById("chatWindow");
+        const loadDiv = document.createElement("div");
+        loadDiv.id = loadId;
+        loadDiv.className = "msg-row ai";
+        loadDiv.innerHTML = `<div class="avatar ai"><i class="fa-solid fa-robot"></i></div><div class="msg-content"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+        chatWin.appendChild(loadDiv);
+        chatWin.scrollTop = chatWin.scrollHeight;
+
+        let cost = activeUid === currentUser.uid ? 1 : 5;
+
+        // 1. DEPTH LOGIC CUSTOMIZE KARO (YAHAN CHANGE HAI 👇)
+        let depthInstruction = "";
+        if (responseLength === "short") {
+          depthInstruction =
+            "Keep it extremely concise. Max 5-10 sentences. No fluff."; // <-- Yahan "Short" ko define kar
+        } else if (responseLength === "moderate") {
+          depthInstruction =
+            "Standard detailed analysis. Balance between depth and brevity.";
+        } else if (responseLength === "detailed") {
+          cost *= 2; // Double Cost logic
+          depthInstruction =
+            "Comprehensive, deep dive analysis with full explanations.";
+        }
+
+        const lang = document.getElementById("langSelector").value;
+
+        // 2. SYSTEM MSG MEIN "depthInstruction" USE KARO
+        const systemMsg = `${message}. 
+         [SYSTEM RULES]: 
+         1. Language: ${lang} (IMPORTANT: If 'Hinglish', use Roman script mixed with Hindi). 
+         2. Depth: ${depthInstruction}.  <-- (Ab ye tumhara wala instruction use karega)
+         3. FORMAT: 
+            - Use <h3> for headings.
+            - Use Markdown tables for data.
+            - Use <b> for key terms.
+            - Insert '---' after sections.
+         4. FOLLOW-UP: End with 3 suggestions: <<<Q1 | Q2 | Q3>>>.`;
+
+        try {
+          const res = await fetch("/api/chat_analysis", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              uid: activeUid,
+              payer_uid: currentUser.uid,
+              message: systemMsg,
+              chart_focus: chartType,
+              cost: cost,
+            }),
+          });
+          const data = await res.json();
+          document.getElementById(loadId).remove();
+
+          if (data.error === "low_balance") {
+            addMessageToChat(
+              `⚠️ **Insufficient Points**<br>Cost: ${cost} | Balance: Low`,
+              "ai"
+            );
+          } else {
+            addMessageToChat(data.reply, "ai");
+          }
+        } catch (e) {
+          document.getElementById(loadId).remove();
+          addMessageToChat("Error connecting.", "ai");
+        }
+        sendBtn.style.opacity = "1";
+        sendBtn.disabled = false;
+      }
+
+      function addMessageToChat(text, sender) {
+        const chatWin = document.getElementById("chatWindow");
+        let content = text;
+        let suggestions = [];
+
+        if (sender === "ai") {
+          const match = text.match(/<<<([\s\S]*?)>>>/);
+          if (match) {
+            suggestions = match[1].split("|").map((s) => s.trim());
+            content = text.replace(match[0], "");
+          }
+          // USE MARKED.JS
+          try {
+            content = marked.parse(content);
+          } catch (e) {
+            console.log(e);
+          }
+        } else {
+          content = content.replace(/\n/g, "<br>");
+        }
+
+        const div = document.createElement("div");
+        div.className = `msg-row ${sender}`;
+        div.innerHTML = `<div class="avatar ${sender}"><i class="fa-solid fa-${
+          sender === "ai" ? "robot" : "user"
+        }"></i></div><div class="msg-content">${content}</div>`;
+        chatWin.appendChild(div);
+
+        if (suggestions.length > 0) {
+          const chipCont = document.createElement("div");
+          chipCont.className = "followup-container";
+          suggestions.forEach((q) => {
+            if (q)
+              chipCont.innerHTML += `<div class="chip" onclick="sendMessage('${q.replace(
+                /'/g,
+                "\\'"
+              )}');"><i class="fa-regular fa-comment-dots"></i> ${q}</div>`;
+          });
+          chatWin.appendChild(chipCont);
+        }
+        chatWin.scrollTop = chatWin.scrollHeight;
+      }
+
+      // --- GUEST ---
+      async function analyzeGuest(e) {
+        e.preventDefault();
+        const btn = document.querySelector(".btn-submit-guest");
+        btn.innerText = "Analyzing...";
+        btn.disabled = true;
+        const fd = new FormData();
+        const gid = "guest_" + Date.now();
+        fd.append("uid", gid);
+        fd.append("name", document.getElementById("gName").value);
+        fd.append("dob", document.getElementById("gDob").value);
+        fd.append("time", document.getElementById("gTime").value);
+        fd.append("place", document.getElementById("gPlace").value);
+        fd.append("gender", document.getElementById("gGender").value);
+        fd.append("status", "single");
+
+        try {
+          const res = await fetch("/api/save_user_data", {
+            method: "POST",
+            body: fd,
+          });
+          const d = await res.json();
+          if (d.status === "success") {
+            activeUid = gid;
+            await loadUserData(gid);
+            updateUIForUser(
+              "GUEST: " + document.getElementById("gName").value.split(" ")[0],
+              true
+            );
+            toggleGuestModal(false);
+            addMessageToChat(
+              "Guest Profile Loaded. Ask anything (5 Pts).",
+              "ai"
+            );
+          }
+        } catch (err) {
+          alert("Error");
+        }
+        btn.innerText = "Create & Analyze";
+        btn.disabled = false;
+      }
+
+      function revertToSelf() {
+        activeUid = currentUser.uid;
+        loadUserData(activeUid);
+        updateUIForUser("MY CHART", false);
+        addMessageToChat("Back to Self Analysis.", "ai");
+        if (window.innerWidth < 768) closeDrawers();
+      }
+      function toggleLeftSidebar() {
+        document.getElementById("leftSidebar").classList.toggle("active");
+        document.getElementById("overlay").classList.toggle("active");
+      }
+      function toggleRightDrawer() {
+        document.getElementById("rightDrawer").classList.toggle("open");
+        document.getElementById("overlay").classList.toggle("active");
+      }
+      function closeDrawers() {
+        document.getElementById("leftSidebar").classList.remove("active");
+        document.getElementById("rightDrawer").classList.remove("open");
+        document.getElementById("overlay").classList.remove("active");
+        toggleGuestModal(false);
+      }
+      function toggleGuestModal(s) {
+        document.getElementById("guestModal").style.display = s
+          ? "block"
+          : "none";
+        document.getElementById("overlay").style.display = s ? "block" : "none";
+      }
+      function logoutUser() {
+        auth.signOut().then(() => (window.location.href = "/"));
+      }
+
+      const chartBtn = document.querySelectorAll(".chart-btn");
+      chartBtn.forEach((btn) => {
+        btn.style.cssText =
+          "width:100%; padding:12px; margin-bottom:8px; background:transparent; border:1px solid #333; color:#ccc; border-radius:8px; text-align:left; cursor:pointer; font-size:0.9rem; transition:0.2s;";
+        btn.onmouseover = () => (btn.style.borderColor = "var(--gold)");
+        btn.onmouseout = () => (btn.style.borderColor = "#333");
+      });
+    </script>
+  </body>
+</html>
