@@ -17,19 +17,22 @@ app = Flask(__name__)
 # ==========================================
 if not firebase_admin._apps:
     try:
-        cred = credentials.Certificate("serviceAccountKey.json")
-        firebase_admin.initialize_app(cred)
-        print("🔥 Firebase Initialized Successfully")
+        # Local testing ke liye file check
+        if os.path.exists("serviceAccountKey.json"):
+            cred = credentials.Certificate("serviceAccountKey.json")
+            firebase_admin.initialize_app(cred)
+            print("🔥 Firebase Initialized Successfully")
+        else:
+            print("⚠️ Service Account Key not found!")
     except Exception as e:
         print(f"❌ Firebase Init Error: {e}")
 
 db = firestore.client()
 
 # ==========================================
-# 2. API KEYS SETUP (DIRECTLY INSERTED)
+# 2. API KEYS SETUP (SECURE)
 # ==========================================
-# Vedic API Key (Hardcoded fallback)
-VEDIC_API_KEY = os.getenv("VEDIC_API_KEY") 
+VEDIC_API_KEY = os.getenv("VEDIC_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 client = None
@@ -40,7 +43,7 @@ if GROQ_API_KEY:
     except Exception as e:
         print(f"⚠️ Groq Connection Error: {e}")
 else:
-    print("⚠️ WARNING: GROQ_API_KEY missing.")
+    print("⚠️ WARNING: GROQ_API_KEY missing in .env")
 
 # Rashi Mapping
 RASHI_MAP = {
@@ -79,15 +82,19 @@ def format_chart_for_ai(chart_data):
 # ==========================================
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # Key HTML ko pass kar rahe hain
+    fb_key = os.getenv("FIREBASE_API_KEY")
+    return render_template('index.html', fb_key=fb_key)
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    fb_key = os.getenv("FIREBASE_API_KEY")
+    return render_template('dashboard.html', fb_key=fb_key)
 
 @app.route('/soulmate')
 def soulmate():
-    return render_template('soulmate.html')
+    fb_key = os.getenv("FIREBASE_API_KEY")
+    return render_template('soulmate.html', fb_key=fb_key)
 
 @app.route('/api/save_user_data', methods=['POST'])
 def save_user_data():
@@ -110,6 +117,7 @@ def save_user_data():
         current_points = 0 
         if not uid.startswith('guest_'):
             doc = db.collection('users').document(uid).get()
+            # Yahan 20 points kar diye hain (Existing user ka purana balance, naye ka 20)
             current_points = doc.to_dict().get('profile', {}).get('credits', 20) if doc.exists else 20
 
         chart_data['profile'].update({
@@ -145,11 +153,9 @@ def chat_analysis():
         
         if credits < cost: return jsonify({"reply": f"Low Balance: {credits}", "error": "low_balance"})
 
-        # --- LOGIC ---
         d1_readable = format_chart_for_ai(charts.get('D1', {}))
         target_readable = format_chart_for_ai(charts.get(chart_focus, {}))
 
-        # Detect Mode (Case Insensitive)
         msg_lower = user_message.lower()
         is_report_mode = "analyze" in msg_lower and "chart" in msg_lower
         
@@ -157,103 +163,53 @@ def chat_analysis():
         depth_instruction = ""
 
         if is_report_mode:
-            # === REPORT MODE ===
             depth_instruction = """
-            **MODE: DETAILED REPORT (IGNORE BREVITY)**
-            - You MUST output a long, structured response.
+            **MODE: DETAILED REPORT**
             - Follow the SECTION STRUCTURE exactly.
             - Use double line breaks between paragraphs.
             """
-            
             if chart_focus == 'D1':
                 task_instruction = """
                 **TASK: Generate D1 Chart Analysis in 6 Distinct Sections**
-                
                 ### Section 1: 🔥 Powerful Yogas & Rarity
-                - Identify 3 major Yogas (e.g., Gajakesari, Raj Yoga) strictly from data.
-                - Rate their rarity (Common/Rare/Legendary).
-                
                 ### Section 2: 👤 Personality & Looks
-                - Analyze Lagna & Lord for core nature.
-                - Analyze traits: Good vs Bad habits.
-                - Looks/Aura description.
-                
                 ### Section 3: 💰 Wealth Potential
-                - How much money? (High/Average).
-                - Sources (Job/Business).
-                
                 ### Section 4: 🐉 Rahu & Ketu Axis
-                - Where are they placed?
-                - What is their karmic impact?
-                
                 ### Section 5: 🪐 Moon, Mars & Saturn
-                - Analyze Moon (Mind), Mars (Energy), Saturn (Karma).
-                - Explain why they are good or bad here.
-                
                 ### Section 6: ⭐ Final Rating
-                - Rate this Kundli out of 10.
-                - Final One-Line Verdict.
                 """
-            # Add other charts templates...
             elif chart_focus == 'D2':
-                task_instruction = "Detailed D2 Wealth analysis in 3 sections: Verdict, Sources, Risks."
+                task_instruction = "Detailed D2 Wealth analysis."
             else:
                 task_instruction = f"Analyze {chart_focus} in detailed sections."
-
         else:
-            # === CHAT MODE ===
             if "Depth: short" in user_message:
-                depth_instruction = "Keep answer under 60 words. Bullet points only."
+                depth_instruction = "Keep answer under 60 words."
             elif "Depth: detailed" in user_message:
-                depth_instruction = "Detailed explanation (300+ words) with logic and remedies."
+                depth_instruction = "Detailed explanation with logic."
             else:
-                depth_instruction = "Balanced answer (150 words)."
+                depth_instruction = "Balanced answer."
             task_instruction = "Answer user question directly."
 
-        # --- FINAL PROMPT ---
         final_prompt = f"""
-        You are Origo AI, an expert Vedic Astrologer.
-        
-        [1. CLIENT PROFILE]
-        Name: {profile.get('name')} | Gender: {profile.get('gender')}
-        Dasha: {dasha.get('mahadasha')} > {dasha.get('antardasha')}
-
-        [2. PLANETARY DATA]
-        === D1 CHART ===
-        {d1_readable}
-        
-        === {chart_focus} CHART ===
-        {target_readable}
-
-        [3. INPUT]
-        "{user_message}"
-
-        [4. INSTRUCTIONS]
-        {task_instruction}
-        
-        [5. RULES]
-        {depth_instruction}
-        - Use `### Section X:` for headers (If Report Mode).
-        - Use `*` for bullets.
-        - **Bold** keywords.
-        - Add `---` separator after every section.
+        You are Origo AI.
+        [CLIENT] {profile.get('name')} | {profile.get('gender')}
+        [DATA]
+        D1: {d1_readable}
+        {chart_focus}: {target_readable}
+        [INPUT] "{user_message}"
+        [INSTRUCTIONS] {task_instruction}
+        [RULES] {depth_instruction}
+        - Use Markdown.
         - End with 3 suggestions: <<<Q1 | Q2 | Q3>>>
         """
 
         if not client: return jsonify({"reply": "API Error: Groq not connected"})
         
-        print(f"🤖 Calling Groq (Llama-3.3)... Mode: {'REPORT' if is_report_mode else 'CHAT'}")
-
         chat_completion = client.chat.completions.create(
             messages=[
-                {
-                    "role": "system",
-                    "content": "You are a helpful, mystical, and accurate Vedic Astrologer named Origo. Always output in valid Markdown.",
-                },
-                {
-                    "role": "user",
-                    "content": final_prompt,
-                }
+                {"role": "system", "content": "You are a helpful, mystical, and accurate Vedic Astrologer named Origo. Always output in valid Markdown."},
+                {"role": "user", "content": final_prompt}
             ],
             model="llama-3.3-70b-versatile",
             temperature=0.7,
@@ -261,13 +217,11 @@ def chat_analysis():
         )
         
         reply_text = chat_completion.choices[0].message.content
-
         payer_ref.update({"profile.credits": credits - cost})
         return jsonify({"reply": reply_text, "new_credits": credits - cost})
 
     except Exception as e:
         print(f"❌ Error: {e}")
-        traceback.print_exc()
         return jsonify({"reply": "Server Error."}), 500
 
 if __name__ == '__main__':

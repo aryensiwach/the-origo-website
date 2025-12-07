@@ -3,12 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="The Origo - Decode your past life soulmate and karmic debts using the most powerful AI Vedic Astrology engine."
-    />
     <title>The Origo | Decode Your Destiny</title>
-
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
@@ -18,7 +13,6 @@
       type="image/x-icon"
       href="{{ url_for('static', filename='favicon.ico') }}"
     />
-
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -27,6 +21,26 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
+    <style>
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        align-items: center;
+        justify-content: center;
+      }
+      .modal.active {
+        display: flex !important;
+      }
+    </style>
   </head>
 
   <body>
@@ -37,49 +51,47 @@
         <div class="logo-container">
           <img
             src="{{ url_for('static', filename='logo.png') }}"
-            alt="The Origo Logo"
+            alt="Logo"
             class="main-logo"
           />
           <span class="brand-name">The Origo</span>
         </div>
-
         <div class="nav-links" id="navLinks">
-          <i class="fa-solid fa-xmark close-menu" id="closeMenuBtn"></i>
+          <i
+            class="fa-solid fa-xmark close-menu"
+            id="closeMenuBtn"
+            onclick="toggleMenu()"
+          ></i>
           <a href="#">Home</a>
           <a
             href="{{ url_for('soulmate') }}"
             style="color: #ff6b6b; font-weight: 600"
-            >Find Soulmate
-          </a>
+            >Find Soulmate ❤️</a
+          >
           <a href="#features">Process</a>
           <a href="#faq">FAQs</a>
-
           <a
             href="#"
-            onclick="openLoginModal()"
+            onclick="openModal('loginModal')"
             class="btn-login-mobile trigger-join"
             id="mobileLoginBtn"
             >Login</a
           >
-
           <div
             id="mobileUserSection"
             style="display: none; width: 100%; text-align: center"
           ></div>
         </div>
-
         <div class="nav-right">
           <div id="desktopAuthBtns">
             <a
               href="#"
-              onclick="openLoginModal()"
+              onclick="openModal('loginModal')"
               class="btn-login-desktop trigger-join"
               id="desktopLoginBtn"
-            >
-              Login <i class="fa-solid fa-right-to-bracket"></i>
-            </a>
+              >Login <i class="fa-solid fa-right-to-bracket"></i
+            ></a>
           </div>
-
           <div
             id="desktopUserSection"
             style="display: none; align-items: center; gap: 15px"
@@ -88,28 +100,10 @@
               >Namaste,
               <span
                 class="desktopUserName"
-                style="
-                  color: var(--gold);
-                  font-weight: bold;
-                  text-transform: capitalize;
-                "
+                style="color: var(--gold); font-weight: bold"
                 >User</span
-              >
-              <i
-                class="fa-solid fa-pen-to-square"
-                onclick="openEditProfile()"
-                style="
-                  cursor: pointer;
-                  margin-left: 5px;
-                  color: #aaa;
-                  transition: 0.3s;
-                "
-                onmouseover="this.style.color='var(--gold)'"
-                onmouseout="this.style.color='#aaa'"
-                title="Edit Profile"
-              ></i>
-            </span>
-
+              ></span
+            >
             <button
               onclick="logoutUser()"
               class="btn-login-desktop"
@@ -117,22 +111,23 @@
                 background: transparent;
                 border: 1px solid var(--gold);
                 color: var(--gold);
-                cursor: pointer;
                 padding: 5px 15px;
               "
             >
               Logout <i class="fa-solid fa-power-off"></i>
             </button>
           </div>
-
-          <i class="fa-solid fa-bars hamburger" id="hamburgerBtn"></i>
+          <i
+            class="fa-solid fa-bars hamburger"
+            id="hamburgerBtn"
+            onclick="toggleMenu()"
+          ></i>
         </div>
       </nav>
-
       <div class="beta-bar">
         <p>
-          <i class="fa-solid fa-fire-flame-curved blink"></i>
-          BETA LAUNCH OFFER: Full Analysis is <span class="strike">₹200</span>
+          <i class="fa-solid fa-fire-flame-curved blink"></i> BETA LAUNCH OFFER:
+          Full Analysis is <span class="strike">₹200</span>
           <span class="free-tag">FREE</span> for next
           <span id="timer">15:00</span> Minutes!
         </p>
@@ -141,52 +136,28 @@
 
     <div class="hero">
       <h1>
-        Decode Your Destiny with <br />
-        <span class="text-gold">Most Powerful AI Astrology</span>
+        Decode Your Destiny with <br /><span class="text-gold"
+          >Most Powerful AI Astrology</span
+        >
       </h1>
-
       <p class="hero-sub">
         A fusion of <strong>Real Astrologers & AI</strong>. 100% Calculation
-        Accuracy for D-1 to D-60 Charts. Find your
-        <strong>Past Life Soulmate</strong>.
+        Accuracy for D-1 to D-60 Charts.
       </p>
-
       <div class="hero-highlights">
         <div class="highlight-box">
           <i class="fa-solid fa-bullseye"></i> 95% Accurate Predictions
         </div>
         <div class="highlight-box">
-          <i class="fa-solid fa-heart"></i> Know Your Soulmate & Life Purpose
+          <i class="fa-solid fa-heart"></i> Know Your Soulmate
         </div>
       </div>
-
       <div class="cta-group">
         <button type="button" class="btn-reveal" onclick="handleMainAction()">
           Reveal My Truth <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
-
-      <p class="privacy-text">Instant Analysis • 100% Private</p>
-
-      <div class="app-launch-section">
-        <p>App Launching Soon on</p>
-        <div class="store-badges">
-          <div class="store-btn">
-            <i class="fa-brands fa-apple"></i>
-            <div>
-              <span class="small-text">Download on the</span
-              ><span class="big-text">App Store</span>
-            </div>
-          </div>
-          <div class="store-btn">
-            <i class="fa-brands fa-google-play"></i>
-            <div>
-              <span class="small-text">GET IT ON</span
-              ><span class="big-text">Google Play</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <p class="privacy-text">Result in 24 Hours • 100% Private</p>
     </div>
 
     <section id="features" class="section-features">
@@ -195,27 +166,17 @@
         <div class="feature-item">
           <i class="fa-solid fa-file-signature icon-3d"></i>
           <h3>1. Accurate Data</h3>
-          <p>
-            We take exact Date & Time. Then, a
-            <strong>Real Astrologer</strong> + Detailed AI Analysis is
-            performed.
-          </p>
+          <p>We take exact Date & Time for precision.</p>
         </div>
         <div class="feature-item">
           <i class="fa-solid fa-brain-circuit icon-3d"></i>
           <h3>2. Deep Scanning</h3>
-          <p>
-            Our engine scans <strong>5,000+ Vedic Rules</strong> (D-60 & Dashas)
-            to find hidden patterns.
-          </p>
+          <p>Our engine scans 5,000+ Vedic Rules.</p>
         </div>
         <div class="feature-item">
           <i class="fa-solid fa-comments icon-3d"></i>
           <h3>3. Chat with Astrologer</h3>
-          <p>
-            Get instant access to your <strong>AI Dashboard</strong> and ask
-            unlimited questions about your future.
-          </p>
+          <p>Get instant answers about your future.</p>
         </div>
       </div>
     </section>
@@ -225,31 +186,11 @@
       <div class="faq-grid">
         <div class="faq-item">
           <h3><i class="fa-solid fa-bolt"></i> Is it instant?</h3>
-          <p>
-            Yes! Unlike traditional astrologers who take days, our AI engine
-            calculates your D-60 charts instantly.
-          </p>
+          <p>Yes! Our AI engine calculates instantly.</p>
         </div>
         <div class="faq-item">
           <h3><i class="fa-solid fa-lock"></i> Is my data safe?</h3>
-          <p>
-            100% Safe. We use encryption. Your birth details are used *only* for
-            calculation.
-          </p>
-        </div>
-        <div class="faq-item">
-          <h3><i class="fa-solid fa-tag"></i> Why is this free?</h3>
-          <p>
-            The Origo is currently in <strong>Public Beta</strong>. Offering
-            this premium analysis for FREE to early users.
-          </p>
-        </div>
-        <div class="faq-item">
-          <h3><i class="fa-solid fa-infinity"></i> What can I ask?</h3>
-          <p>
-            Ask anything related to Career, Marriage, Wealth, or Past Life. The
-            AI answers based on your unique planetary positions.
-          </p>
+          <p>100% Safe. Deleted in 24 hours.</p>
         </div>
       </div>
     </section>
@@ -272,7 +213,7 @@
           >&times;</span
         >
         <div class="modal-header">
-          <h2>Whose Future?</h2>
+          <h2>Whose Future? 🔮</h2>
           <p>Select whose chart you want to decode.</p>
         </div>
         <div
@@ -289,8 +230,6 @@
             style="
               background: var(--gold);
               color: #000;
-              display: flex;
-              align-items: center;
               justify-content: center;
               gap: 10px;
             "
@@ -304,8 +243,6 @@
               background: transparent;
               border: 1px solid var(--gold);
               color: var(--gold);
-              display: flex;
-              align-items: center;
               justify-content: center;
               gap: 10px;
             "
@@ -333,11 +270,10 @@
               background: white;
               color: #333;
               border: 1px solid #ddd;
-              display: flex;
-              align-items: center;
               justify-content: center;
               gap: 10px;
             "
+            onclick="signInWithGoogle()"
           >
             <i class="fa-brands fa-google" style="color: #db4437"></i> Continue
             with Google
@@ -353,46 +289,38 @@
         >
         <div class="modal-header">
           <h2>Setup Your Profile 🔮</h2>
-          <p>Enter accurate Birth Details for D1-D60</p>
+          <p>Enter accurate Birth Details</p>
         </div>
         <form id="onboardingForm" onsubmit="submitOnboarding(event)">
           <input type="hidden" id="userUid" name="uid" />
           <input type="hidden" id="userEmail" name="email" />
           <div class="input-group">
-            <label>Full Name</label>
-            <input type="text" id="userName" name="name" required />
+            <label>Full Name</label
+            ><input type="text" id="userName" name="name" required />
           </div>
           <div class="row-inputs">
             <div class="input-group">
-              <label>Date of Birth</label>
-              <input type="date" name="dob" required />
+              <label>DOB</label><input type="date" name="dob" required />
             </div>
             <div class="input-group">
-              <label>Time of Birth</label>
-              <input type="time" name="time" required />
+              <label>Time</label><input type="time" name="time" required />
             </div>
           </div>
           <div class="input-group">
-            <label>Place of Birth (City)</label>
-            <input
-              type="text"
-              name="place"
-              placeholder="e.g. Mumbai"
-              required
-            />
+            <label>Place</label
+            ><input type="text" name="place" placeholder="City" required />
           </div>
           <div class="row-inputs">
             <div class="input-group">
-              <label>Gender</label>
-              <select name="gender">
+              <label>Gender</label
+              ><select name="gender">
                 <option value="male">Male</option>
                 <option value="female">Female</option>
-                <option value="other">Other</option>
               </select>
             </div>
             <div class="input-group">
-              <label>Status</label>
-              <select name="status">
+              <label>Status</label
+              ><select name="status">
                 <option value="single">Single</option>
                 <option value="relationship">In Relationship</option>
                 <option value="married">Married</option>
@@ -404,106 +332,226 @@
       </div>
     </div>
 
-    <div id="editProfileModal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('editProfileModal')"
-          >&times;</span
-        >
-        <div class="modal-header">
-          <h2>Edit Profile ✏️</h2>
-          <p>Update your birth details</p>
-        </div>
-        <form id="editProfileForm" onsubmit="updateProfile(event)">
-          <div class="input-group">
-            <label>Full Name</label>
-            <input type="text" id="editName" name="name" required />
-          </div>
-          <div class="row-inputs">
-            <div class="input-group">
-              <label>Date of Birth</label>
-              <input type="date" id="editDob" name="dob" required />
-            </div>
-            <div class="input-group">
-              <label>Time of Birth</label>
-              <input type="time" id="editTime" name="time" required />
-            </div>
-          </div>
-          <div class="input-group">
-            <label>Place of Birth (City)</label>
-            <input type="text" id="editPlace" name="place" required />
-          </div>
-          <div class="row-inputs">
-            <div class="input-group">
-              <label>Gender</label>
-              <select id="editGender" name="gender">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Status</label>
-              <select id="editStatus" name="status">
-                <option value="single">Single</option>
-                <option value="relationship">In Relationship</option>
-                <option value="married">Married</option>
-              </select>
-            </div>
-          </div>
-          <button
-            type="submit"
-            class="btn-submit"
-            style="background: var(--gold); color: #000"
-          >
-            Update Details
-          </button>
-        </form>
-      </div>
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-    <script
-      src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"
-      crossorigin="anonymous"
-    ></script>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
-      // ... Baki saare purane functions (Selection Modal, Login, etc.) ...
+      // 1. FIREBASE INIT (Using the injected Key)
+      const firebaseConfig = {
+        apiKey: "{{ fb_key }}",
+        authDomain: "internhub-c469b.firebaseapp.com",
+        projectId: "internhub-c469b",
+        storageBucket: "internhub-c469b.firebasestorage.app",
+        messagingSenderId: "332430290715",
+        appId: "1:332430290715:web:d4c7725ebe94785d156dbe",
+      };
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      const provider = new firebase.auth.GoogleAuthProvider();
 
-      // 👇 YAHAN PASTE KAR NAYA CODE 👇
-      function startCountdown(duration, display) {
-        let timer = duration,
-          minutes,
-          seconds;
-        setInterval(function () {
-          minutes = parseInt(timer / 60, 10);
-          seconds = parseInt(timer % 60, 10);
-
-          minutes = minutes < 10 ? "0" + minutes : minutes;
-          seconds = seconds < 10 ? "0" + seconds : seconds;
-
-          display.textContent = minutes + ":" + seconds;
-
-          if (--timer < 0) {
-            timer = duration;
+      // 2. CONSTELLATION ANIMATION
+      const canvas = document.getElementById("constellation-canvas");
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+        class Particle {
+          constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 0.1;
+            this.speedX = Math.random() * 0.5 - 0.25;
+            this.speedY = Math.random() * 0.5 - 0.25;
           }
-        }, 1000);
+          update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+            if (this.y > canvas.height || this.y < 0)
+              this.speedY = -this.speedY;
+          }
+          draw() {
+            ctx.fillStyle = "#d4a373";
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        function init() {
+          particles = [];
+          for (let i = 0; i < (canvas.width * canvas.height) / 9000; i++)
+            particles.push(new Particle());
+        }
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          let g = ctx.createRadialGradient(
+            canvas.width / 2,
+            canvas.height / 2,
+            0,
+            canvas.width / 2,
+            canvas.height / 2,
+            canvas.width
+          );
+          g.addColorStop(0, "#064e3b");
+          g.addColorStop(1, "#022c22");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+          }
+          requestAnimationFrame(animate);
+        }
+        window.addEventListener("resize", () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          init();
+        });
+        init();
+        animate();
       }
 
-      window.addEventListener("load", function () {
-        const fifteenMinutes = 60 * 15;
-        const display = document.querySelector("#timer");
-        if (display) startCountdown(fifteenMinutes, display);
+      // 3. UI LOGIC
+      window.openModal = (id) =>
+        document.getElementById(id).classList.add("active");
+      window.closeModal = (id) =>
+        document.getElementById(id).classList.remove("active");
+      window.toggleMenu = () => {
+        const n = document.getElementById("navLinks");
+        n.style.display = n.style.display === "flex" ? "none" : "flex";
+      };
+
+      // 4. AUTH & NAVIGATION
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          toggleAuthUI(true, user);
+        } else {
+          toggleAuthUI(false, null);
+        }
       });
-      // 👆 YAHAN KHATAM 👆
+
+      function toggleAuthUI(isLoggedIn, user) {
+        const deskAuth = document.getElementById("desktopAuthBtns");
+        const deskUser = document.getElementById("desktopUserSection");
+        const mobLogin = document.getElementById("mobileLoginBtn");
+        const mobUser = document.getElementById("mobileUserSection");
+
+        if (isLoggedIn) {
+          if (deskAuth) deskAuth.style.display = "none";
+          if (deskUser) {
+            deskUser.style.display = "flex";
+            document.querySelector(".desktopUserName").innerText =
+              user.displayName.split(" ")[0];
+          }
+          if (mobLogin)
+            mobLogin.style.setProperty("display", "none", "important");
+          if (mobUser) {
+            mobUser.style.display = "block";
+            mobUser.innerHTML = `<p style="color:#gold">Hi ${
+              user.displayName.split(" ")[0]
+            }</p><button onclick="logoutUser()" style="color:red; background:none; border:1px solid red; padding:5px; margin-top:5px; width:100%">Logout</button>`;
+          }
+        } else {
+          if (deskAuth) deskAuth.style.display = "block";
+          if (deskUser) deskUser.style.display = "none";
+          if (mobLogin) mobLogin.style.display = "block";
+          if (mobUser) mobUser.style.display = "none";
+        }
+      }
+
+      window.handleMainAction = () => openModal("selectionModal");
+
+      window.proceedAnalysis = (mode) => {
+        closeModal("selectionModal");
+        sessionStorage.setItem("analysisMode", mode);
+        if (mode === "guest" && auth.currentUser) {
+          window.location.href = "/dashboard?mode=guest";
+          return;
+        }
+        if (!auth.currentUser) {
+          openModal("loginModal");
+        } else {
+          checkUserProfile(auth.currentUser);
+        }
+      };
+
+      window.signInWithGoogle = () => {
+        auth
+          .signInWithPopup(provider)
+          .then((res) => {
+            closeModal("loginModal");
+            checkUserProfile(res.user);
+          })
+          .catch((e) => alert(e.message));
+      };
+
+      window.logoutUser = () =>
+        auth.signOut().then(() => (window.location.href = "/"));
+
+      async function checkUserProfile(user) {
+        const mode = sessionStorage.getItem("analysisMode");
+        if (mode === "guest") {
+          window.location.href = "/dashboard?mode=guest";
+          return;
+        }
+        try {
+          const doc = await db.collection("users").doc(user.uid).get();
+          if (doc.exists) {
+            window.location.href = "/dashboard";
+          } else {
+            openModal("onboardingModal");
+            document.getElementById("userUid").value = user.uid;
+            document.getElementById("userEmail").value = user.email;
+            document.getElementById("userName").value = user.displayName;
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      window.submitOnboarding = async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector("button");
+        btn.innerText = "Generating...";
+        const fd = new FormData(e.target);
+        try {
+          const res = await fetch("/api/save_user_data", {
+            method: "POST",
+            body: fd,
+          });
+          const d = await res.json();
+          if (d.status === "success") window.location.href = "/dashboard";
+          else {
+            alert(d.message);
+            btn.innerText = "Try Again";
+          }
+        } catch (err) {
+          alert("Error");
+          btn.innerText = "Try Again";
+        }
+      };
+
+      // Timer
+      function startCountdown(duration, display) {
+        let timer = duration,
+          m,
+          s;
+        setInterval(function () {
+          m = parseInt(timer / 60, 10);
+          s = parseInt(timer % 60, 10);
+          m = m < 10 ? "0" + m : m;
+          s = s < 10 ? "0" + s : s;
+          display.textContent = m + ":" + s;
+          if (--timer < 0) timer = duration;
+        }, 1000);
+      }
+      window.addEventListener("load", function () {
+        const display = document.querySelector("#timer");
+        if (display) startCountdown(60 * 15, display);
+      });
     </script>
   </body>
 </html>
